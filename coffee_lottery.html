@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>☕ 咖啡鼠摇摇车</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(180deg, #fdf6ec 0%, #fdebd0 30%, #f5cba7 60%, #d5e8d4 100%);
+    font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+    display:flex; flex-direction:column; align-items:center;
+    padding:20px 16px 60px; color:#5d4037;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .header { text-align:center; margin-bottom:16px; }
+  .header h1 {
+    font-size:2rem; font-weight:800;
+    background: linear-gradient(135deg, #c07c3a, #a0522d, #8b4513);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; text-shadow:none; letter-spacing:3px;
+  }
+  .header .sub { font-size:.78rem; color:#bcaaa4; margin-top:4px; letter-spacing:1px; }
+
+  .deco-row {
+    display:flex; justify-content:center; gap:8px; margin-bottom:20px; font-size:1.5rem;
+    animation: float 2.5s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+  .prize-grid {
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
+    width:100%; max-width:640px; margin-bottom:20px;
+  }
+  @media (max-width:480px) { .prize-grid { grid-template-columns:repeat(3, 1fr); gap:6px; } }
+  .prize-card {
+    background:rgba(255,255,255,0.78);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    border:1.5px solid rgba(192,124,58,0.2);
+    border-radius:14px; padding:10px 5px; text-align:center;
+    transition:all .3s; cursor:default;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+  .prize-card.highlight {
+    background:linear-gradient(135deg, #fef3c7, #fde68a);
+    border-color:#c07c3a; transform:scale(1.07);
+    box-shadow:0 4px 20px rgba(192,124,58,0.38);
+  }
+  .prize-card .icon { font-size:1.5rem; }
+  .prize-card .name { font-size:.68rem; margin-top:3px; line-height:1.3; color:#6d4c41; }
+  .prize-card .qty  { display:inline-block; margin-top:4px; background:rgba(192,124,58,0.12); border-radius:10px; padding:2px 8px; font-size:.6rem; color:#a1887f; }
+
+  .btn-main {
+    padding:14px 48px; font-size:1.15rem; font-weight:700; letter-spacing:2px;
+    color:#fff; border:none; border-radius:50px; cursor:pointer;
+    background:linear-gradient(135deg, #f6c89a, #e09050, #c07030);
+    box-shadow:0 6px 24px rgba(192,112,48,0.32);
+    transition:all .2s; position:relative; overflow:hidden;
+    margin-bottom:18px;
+  }
+  .btn-main:hover  { transform:translateY(-2px); box-shadow:0 8px 28px rgba(192,112,48,0.42); }
+  .btn-main:active { transform:scale(0.96); }
+  .btn-main:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  .btn-main .ripple {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.4);
+    animation:rippleAnim .6s linear; pointer-events:none;
+  }
+  @keyframes rippleAnim { from{transform:scale(0);opacity:1} to{transform:scale(4);opacity:0} }
+
+  .result-wrap { width:100%; max-width:460px; margin-bottom:16px; }
+  #resultBox {
+    background:rgba(255,255,255,0.78);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    border:1.5px solid rgba(192,124,58,0.2);
+    border-radius:18px; padding:18px 20px; text-align:center;
+    transition:all .4s; min-height:80px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  #resultBox.show { border-color:#c07c3a; box-shadow:0 4px 24px rgba(192,124,58,0.2); }
+  #resultBox .r-label { font-size:.7rem; color:#bcaaa4; letter-spacing:2px; margin-bottom:4px; }
+  #resultBox .r-name  { font-size:1.3rem; font-weight:bold; color:#6d4c41; letter-spacing:1px; }
+  @keyframes popIn { from{opacity:0;transform:scale(0.8) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .pop-in { animation:popIn .4s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
+
+  .section-box {
+    width:100%; max-width:640px;
+    background:rgba(255,255,255,0.72);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    border:1.5px solid rgba(192,124,58,0.15);
+    border-radius:16px; padding:16px 18px; margin-bottom:16px;
+  }
+  .section-title { font-size:.78rem; color:#a1887f; letter-spacing:2px; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  .record-table { width:100%; border-collapse:collapse; font-size:.73rem; }
+  .record-table th { background:rgba(192,124,58,0.07); padding:6px 8px; text-align:left; font-weight:normal; color:#8d6e63; }
+  .record-table th:nth-child(1) { width:36px; text-align:center; }
+  .record-table th:nth-child(3) { width:100px; }
+  .record-table th:nth-child(4) { width:56px; text-align:center; }
+  .record-table td { padding:6px 8px; border-bottom:1px solid rgba(0,0,0,0.04); color:#6d4c41; }
+  .record-table td:nth-child(1) { text-align:center; color:#a1887f; font-size:.65rem; }
+  .record-table td:nth-child(4) { text-align:center; font-weight:600; }
+  .record-table tr.new-row td { animation:fadeRow .4s ease; }
+  @keyframes fadeRow { from{opacity:0;background:rgba(254,243,199,0.4)} to{opacity:1;background:transparent} }
+
+  .record-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .record-header .section-title { margin-bottom:0; }
+  .btn-group { display:flex; gap:6px; }
+  .btn-sm { padding:3px 10px; font-size:.65rem; border-radius:16px; border:1px solid; cursor:pointer; background:transparent; transition:all .2s; }
+  .btn-sm.export { color:#10b981; border-color:rgba(16,185,129,0.4); }
+  .btn-sm.export:hover { background:rgba(16,185,129,0.08); }
+  .btn-sm.clear { color:#ef4444; border-color:rgba(239,68,68,0.4); }
+  .btn-sm.clear:hover { background:rgba(239,68,68,0.08); }
+
+  .stat-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .stat-chip { background:rgba(192,124,58,0.09); border-radius:10px; padding:4px 12px; font-size:.68rem; color:#8d6e63; }
+  .stat-chip span { color:#c07c3a; font-weight:bold; }
+  .empty-tip { text-align:center; color:#bcaaa4; font-size:.75rem; padding:16px 0; }
+
+  .prob-row { display:flex; align-items:center; margin-bottom:5px; gap:6px; }
+  .prob-label { width:140px; font-size:.64rem; color:#8d6e63; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+  .prob-bar-bg { flex:1; height:7px; background:rgba(192,124,58,0.12); border-radius:4px; overflow:hidden; }
+  .prob-bar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,#f6c89a,#c07030); transition:width .6s ease; }
+  .prob-pct { width:36px; font-size:.6rem; color:#a1887f; text-align:right; flex-shrink:0; }
+
+  .bg-deco { position:fixed; pointer-events:none; z-index:-1; opacity:.06; font-size:8rem; }
+  .bg-deco.tl { top:20px; left:20px; }
+  .bg-deco.tr { top:40px; right:30px; }
+  .bg-deco.bl { bottom:60px; left:40px; }
+  .bg-deco.br { bottom:30px; right:20px; }
+</style>
+</head>
+<body>
+
+<div class="bg-deco tl">☕</div>
+<div class="bg-deco tr">🐟</div>
+<div class="bg-deco bl">🌿</div>
+<div class="bg-deco br">☕</div>
+
+<div class="header">
+  <h1>☕ 咖啡鼠摇摇车</h1>
+  <p class="sub">投币摇一摇，看看哪只咖啡鼠跟你回家~</p>
+</div>
+<div class="deco-row">☕ 🐟 ☕ 🌿 ☕</div>
+
+<div class="prize-grid" id="prizeGrid"></div>
+
+<button class="btn-main" id="drawBtn" onclick="draw(event)">🎠 摇一摇</button>
+
+<div class="result-wrap">
+  <div id="resultBox">
+    <div class="r-label">摇摇结果</div>
+    <div class="r-name" id="resultName">— 点击按钮开始 —</div>
+  </div>
+</div>
+
+<div class="section-box">
+  <div class="record-header">
+    <div class="section-title">📋 抽奖记录</div>
+    <div class="btn-group">
+      <button class="btn-sm export" onclick="exportCSV()">⬇ 导出</button>
+      <button class="btn-sm clear" onclick="clearRecords()">🗑 清空</button>
+    </div>
+  </div>
+  <div class="stat-row" id="statRow"></div>
+  <div style="overflow-x:auto;margin-top:10px;">
+    <table class="record-table">
+      <thead><tr><th>#</th><th>品名</th><th>时间</th><th>概率</th></tr></thead>
+      <tbody id="recordBody"><tr><td colspan="4" class="empty-tip">暂无记录，摇一摇开始吧~</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section-box">
+  <div class="section-title">📊 概率分布（按数量加权）</div>
+  <div id="probBars"></div>
+</div>
+
+<script>
+const prizes = [
+  { name:"咖啡鼠",       qty:2 },
+  { name:"大咖啡鼠",     qty:2 },
+  { name:"小咖啡鼠",     qty:3 },
+  { name:"雷霆咖啡鼠",   qty:2 },
+  { name:"雷霆大咖啡鼠", qty:1 },
+  { name:"咖啡鼠",       qty:2 },
+  { name:"大咖啡鼠",     qty:2 },
+  { name:"小咖啡鼠",     qty:3 },
+  { name:"雷霆咖啡鼠",   qty:2 },
+  { name:"雷霆大咖啡鼠", qty:1 },
+  { name:"咖啡鼠",       qty:2 },
+  { name:"大咖啡鼠",     qty:2 },
+  { name:"小咖啡鼠",     qty:3 },
+  { name:"雷霆咖啡鼠",   qty:2 },
+  { name:"雷霆大咖啡鼠", qty:1 },
+];
+
+const totalQty = prizes.reduce((s,p)=>s+p.qty,0);
+
+const icons = [
+  "☕","🐟","🌿","☕","🐠",
+  "🌿","☕","🐟","🌿","☕",
+  "🐠","🌿","☕","🐟","🌿"
+];
+
+let records = JSON.parse(localStorage.getItem("coffeeLotteryRecords")||"[]");
+let isAnimating = false;
+
+function pct(p) { return (p.qty/totalQty*100).toFixed(1); }
+function fmtTime(ts) {
+  const d = new Date(ts), pad = n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function renderCards() {
+  document.getElementById("prizeGrid").innerHTML = prizes.map((p,i)=>`
+    <div class="prize-card" id="card-${i}">
+      <div class="icon">${icons[i]}</div>
+      <div class="name">${p.name} ×1</div>
+      <div class="qty">共${p.qty}只</div>
+    </div>`).join("");
+}
+
+function renderProbBars() {
+  document.getElementById("probBars").innerHTML = prizes.map((p,i)=>`
+    <div class="prob-row">
+      <div class="prob-label">${icons[i]} 第${i+1}号·${p.name}</div>
+      <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:${pct(p)}%"></div></div>
+      <div class="prob-pct">${pct(p)}%</div>
+    </div>`).join("");
+}
+
+function renderRecords(highlightFirst) {
+  const tbody = document.getElementById("recordBody");
+  if(records.length===0){ tbody.innerHTML='<tr><td colspan="4" class="empty-tip">暂无记录，摇一摇开始吧~</td></tr>'; renderStats(); return; }
+  tbody.innerHTML = records.map((r,i)=>{
+    const isNew = highlightFirst && i===0;
+    return `<tr class="${isNew?'new-row':''}">
+      <td>${records.length-i}</td><td>${r.label}</td><td>${fmtTime(r.ts)}</td><td>${r.prob}</td></tr>`;
+  }).join("");
+  renderStats();
+}
+
+function renderStats() {
+  const el = document.getElementById("statRow");
+  if(records.length===0){el.innerHTML='';return;}
+  const count={}; records.forEach(r=>{count[r.name]=(count[r.name]||0)+1;});
+  const top=Object.entries(count).sort((a,b)=>b[1]-a[1])[0];
+  el.innerHTML=`<div class="stat-chip">总次数 <span>${records.length}</span></div>
+    <div class="stat-chip">不同品种 <span>${Object.keys(count).length}</span></div>
+    <div class="stat-chip">最多抽到 <span>${top[0]}（${top[1]}次）</span></div>`;
+}
+
+function weightedRandom() {
+  let rand = Math.random()*totalQty;
+  for(let i=0;i<prizes.length;i++){rand-=prizes[i].qty;if(rand<=0)return i;}
+  return prizes.length-1;
+}
+
+function flashCards(finalIdx, callback) {
+  const count=14, delays=Array.from({length:count},(_,i)=>i<6?80:i<11?140:220);
+  let step=0, prevIdx=-1;
+  function next() {
+    if(prevIdx>=0) document.getElementById("card-"+prevIdx).classList.remove("highlight");
+    if(step===count){document.getElementById("card-"+finalIdx).classList.add("highlight");setTimeout(callback,300);return;}
+    let idx;
+    if(step>=count-3){idx=finalIdx;}
+    else{do{idx=Math.floor(Math.random()*prizes.length)}while(idx===prevIdx);}
+    document.getElementById("card-"+idx).classList.add("highlight");
+    prevIdx=idx;step++;setTimeout(next,delays[step-1]||200);
+  }
+  next();
+}
+
+function draw(event) {
+  if(isAnimating)return;
+  isAnimating=true;
+  const btn=document.getElementById("drawBtn"); btn.disabled=true;
+  const ripple=document.createElement("span"); ripple.className="ripple";
+  const rect=btn.getBoundingClientRect(), size=Math.max(rect.width,rect.height);
+  ripple.style.cssText=`width:${size}px;height:${size}px;left:${event.clientX-rect.left-size/2}px;top:${event.clientY-rect.top-size/2}px`;
+  btn.appendChild(ripple); setTimeout(()=>ripple.remove(),700);
+  document.querySelectorAll(".prize-card").forEach(c=>c.classList.remove("highlight"));
+  const resultBox=document.getElementById("resultBox"); resultBox.classList.remove("show");
+  const nameEl=document.getElementById("resultName"); nameEl.className="r-name"; nameEl.textContent="🎠 摇动中...";
+  const finalIdx=weightedRandom();
+  flashCards(finalIdx,()=>{
+    const p=prizes[finalIdx];
+    const label = `第${finalIdx+1}号 ${icons[finalIdx]} ${p.name}`;
+    nameEl.textContent="🎉 "+label; nameEl.classList.add("pop-in"); resultBox.classList.add("show");
+    records.unshift({name:p.name, label:label, prob:pct(p)+"%", ts:Date.now()});
+    localStorage.setItem("coffeeLotteryRecords",JSON.stringify(records));
+    renderRecords(true);
+    btn.disabled=false; isAnimating=false;
+  });
+}
+
+function clearRecords() {
+  if(records.length===0)return;
+  if(!confirm(`确认清空全部 ${records.length} 条记录？`))return;
+  records=[]; localStorage.removeItem("coffeeLotteryRecords");
+  renderRecords(false);
+}
+
+function exportCSV() {
+  if(records.length===0){alert("暂无记录！");return;}
+  const header=["序号","品名","时间","概率"];
+  const rows=records.map((r,i)=>[records.length-i,r.label,fmtTime(r.ts),r.prob]);
+  const csv=[header,...rows].map(row=>row.join(",")).join("\n");
+  const bom="\uFEFF", blob=new Blob([bom+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download="咖啡鼠摇摇车记录_"+new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")+".csv";
+  a.click(); URL.revokeObjectURL(url);
+}
+
+renderCards(); renderProbBars(); renderRecords(false);
+</script>
+</body>
+</html>
