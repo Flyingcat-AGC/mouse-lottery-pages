@@ -3,492 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>馃悷 楸奸ゲ鏂欐憞鎽囪溅</title>
+<title>鱼饲料摇摇车</title>
 <style>
-  :root {
-    --c1: #4fc3f7;
-    --c2: #0288d1;
-    --c3: #e0f7fa;
-    --c4: #b2ebf2;
-    --accent: #ff8a65;
-    --gold: #ffd54f;
-    --green: #a5d6a7;
-    --pink: #f48fb1;
-    --radius: 16px;
-    --shadow: 0 4px 18px rgba(2,136,209,0.13);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
-    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 40%, #e8f5e9 100%);
-    min-height: 100vh;
-    padding: 0 0 60px;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+  background:linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 40%,#e8f5e9 100%);
+  min-height:100vh;padding:0 0 60px;
+}
+.bg-deco{position:fixed;font-size:3.5rem;opacity:.08;pointer-events:none;z-index:0;animation:float 8s ease-in-out infinite}
+.bg-deco.tl{top:4%;left:2%}
+.bg-deco.tr{top:4%;right:2%;animation-delay:2s}
+.bg-deco.bl{bottom:8%;left:2%;animation-delay:4s}
+.bg-deco.br{bottom:8%;right:2%;animation-delay:6s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 
-  /* 鈹€鈹€鈹€ 鑳屾櫙瑁呴グ 鈹€鈹€鈹€ */
-  .bg-deco { position:fixed; font-size:3.5rem; opacity:.08; pointer-events:none; z-index:0; animation:float 8s ease-in-out infinite; }
-  .bg-deco.tl { top:4%; left:2%; }
-  .bg-deco.tr { top:4%; right:2%; animation-delay:2s; }
-  .bg-deco.bl { bottom:8%; left:2%; animation-delay:4s; }
-  .bg-deco.br { bottom:8%; right:2%; animation-delay:6s; }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+.header{text-align:center;padding:32px 16px 8px;position:relative;z-index:1}
+.header h1{font-size:1.9rem;color:#0277bd;font-weight:900;letter-spacing:2px}
+.header .sub{margin-top:6px;color:#0288d1;font-size:.88rem}
+.deco-row{text-align:center;font-size:1.4rem;letter-spacing:6px;margin:6px 0 12px}
 
-  /* 鈹€鈹€鈹€ 鏍囬 鈹€鈹€鈹€ */
-  .header { text-align:center; padding:32px 16px 8px; position:relative; z-index:1; }
-  .header h1 { font-size:1.9rem; color:#0277bd; font-weight:900; letter-spacing:2px; text-shadow:0 2px 8px rgba(2,119,189,0.15); }
-  .header .sub { margin-top:6px; color:#0288d1; font-size:.88rem; opacity:.85; }
-  .deco-row { text-align:center; font-size:1.4rem; letter-spacing:6px; margin:6px 0 12px; }
+.phase-tabs{display:flex;justify-content:center;gap:12px;margin:0 16px 20px;position:relative;z-index:1}
+.phase-tab{flex:1;max-width:200px;padding:10px 16px;border-radius:50px;border:2px solid transparent;background:rgba(255,255,255,.5);color:#888;font-size:.88rem;font-weight:700;text-align:center;transition:all .3s}
+.phase-tab.active{background:linear-gradient(135deg,#4fc3f7,#0288d1);color:#fff;border-color:#0288d1;box-shadow:0 3px 14px rgba(2,136,209,.3)}
+.phase-tab.done{background:#a5d6a7;color:#2e7d32;border-color:#81c784}
 
-  /* 鈹€鈹€鈹€ 闃舵鏍囩 鈹€鈹€鈹€ */
-  .phase-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin: 0 16px 20px;
-    position: relative;
-    z-index: 1;
-  }
-  .phase-tab {
-    flex: 1;
-    max-width: 200px;
-    padding: 10px 16px;
-    border-radius: 50px;
-    border: 2px solid transparent;
-    background: rgba(255,255,255,0.5);
-    color: #888;
-    font-size: .88rem;
-    font-weight: 700;
-    text-align: center;
-    transition: all .3s;
-    cursor: default;
-  }
-  .phase-tab.active {
-    background: linear-gradient(135deg, var(--c1), var(--c2));
-    color: white;
-    border-color: var(--c2);
-    box-shadow: 0 3px 14px rgba(2,136,209,0.3);
-  }
-  .phase-tab.done {
-    background: var(--green);
-    color: #2e7d32;
-    border-color: #81c784;
-  }
-  .phase-tab .num { font-size:1.1rem; }
+.grid-section{position:relative;z-index:1;padding:0 12px}
+.section-title{text-align:center;font-size:.78rem;font-weight:700;color:#0288d1;letter-spacing:2px;margin-bottom:10px}
+.prize-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+@media(max-width:400px){.prize-grid{grid-template-columns:repeat(3,1fr)}}
 
-  /* 鈹€鈹€鈹€ 鍗＄墖缃戞牸 鈹€鈹€鈹€ */
-  .grid-section { position:relative; z-index:1; padding:0 12px; }
-  .section-title {
-    text-align: center;
-    font-size: .78rem;
-    font-weight: 700;
-    color: #0288d1;
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-    opacity: .8;
-  }
-  .prize-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  @media(max-width:400px) { .prize-grid { grid-template-columns: repeat(3,1fr); } }
+.prize-card{background:rgba(255,255,255,.75);border-radius:16px;padding:10px 6px 8px;text-align:center;border:2px solid transparent;box-shadow:0 4px 18px rgba(2,136,209,.13);transition:all .2s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.prize-card.lit{background:linear-gradient(135deg,#fff9c4,#ffe082);border-color:#ffd740;box-shadow:0 0 18px rgba(255,213,64,.7);transform:scale(1.04);z-index:2}
+.prize-card.won{background:linear-gradient(135deg,#b2dfdb,#80cbc4);border-color:#26a69a;box-shadow:0 0 20px rgba(38,166,154,.5);transform:scale(1.06)}
+.prize-card .icon{font-size:1.5rem;margin-bottom:3px}
+.prize-card .name{font-size:.65rem;font-weight:700;color:#0277bd;line-height:1.3}
+.prize-card .spec{font-size:.57rem;color:#888;margin-top:2px}
+.prize-card .qty{display:inline-block;margin-top:3px;background:rgba(2,136,209,.1);border-radius:10px;padding:1px 7px;font-size:.58rem;color:#0288d1}
 
-  .prize-card {
-    background: rgba(255,255,255,0.75);
-    border-radius: var(--radius);
-    padding: 10px 6px 8px;
-    text-align: center;
-    border: 2px solid transparent;
-    box-shadow: var(--shadow);
-    transition: all .2s;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    position: relative;
-    overflow: hidden;
-  }
-  .prize-card.lit {
-    background: linear-gradient(135deg,#fff9c4,#ffe082);
-    border-color: #ffd740;
-    box-shadow: 0 0 18px rgba(255,213,64,0.7);
-    transform: scale(1.04);
-    z-index: 2;
-  }
-  .prize-card.won {
-    background: linear-gradient(135deg,#b2dfdb,#80cbc4);
-    border-color: #26a69a;
-    box-shadow: 0 0 20px rgba(38,166,154,0.5);
-    transform: scale(1.06);
-  }
-  .prize-card .icon { font-size:1.5rem; margin-bottom:3px; }
-  .prize-card .name { font-size:.65rem; font-weight:700; color:#0277bd; line-height:1.3; }
-  .prize-card .spec { font-size:.57rem; color:#888; margin-top:2px; }
-  .prize-card .qty  { display:inline-block; margin-top:3px; background:rgba(2,136,209,0.1); border-radius:10px; padding:1px 7px; font-size:.58rem; color:#0288d1; }
+.ctrl-area{text-align:center;padding:0 16px 16px;position:relative;z-index:1}
+.draw-counter{margin-bottom:10px;font-size:.82rem;color:#0288d1;font-weight:600}
+.draw-counter span{display:inline-block;background:rgba(255,255,255,.7);border-radius:50px;padding:4px 14px;border:1.5px solid #b2ebf2}
+.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 28px;border:none;border-radius:50px;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:1px;box-shadow:0 4px 14px rgba(0,0,0,.13)}
+.btn:active{transform:scale(.94)}
+.btn-draw{background:linear-gradient(135deg,#4fc3f7,#0288d1);color:#fff}
+.btn-draw:disabled{background:#ccc;cursor:default;box-shadow:none}
+.btn-phase2{background:linear-gradient(135deg,#ff8a65,#f4511e);color:#fff;display:none}
 
-  /* 鈹€鈹€鈹€ 绗竴闃舵鎺у埗鍖?鈹€鈹€鈹€ */
-  .ctrl-area {
-    text-align: center;
-    padding: 0 16px 16px;
-    position: relative;
-    z-index: 1;
-  }
-  .draw-counter {
-    margin-bottom: 10px;
-    font-size: .82rem;
-    color: #0288d1;
-    font-weight: 600;
-  }
-  .draw-counter span {
-    display: inline-block;
-    background: rgba(255,255,255,0.7);
-    border-radius: 50px;
-    padding: 4px 14px;
-    border: 1.5px solid #b2ebf2;
-  }
-  .btn-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-  .btn {
-    padding: 12px 28px;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all .2s;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
-  }
-  .btn:active { transform: scale(0.94); }
-  .btn-draw {
-    background: linear-gradient(135deg, #4fc3f7, #0288d1);
-    color: white;
-  }
-  .btn-draw:disabled {
-    background: #ccc;
-    cursor: default;
-    box-shadow: none;
-  }
-  .btn-skip {
-    background: rgba(255,255,255,0.8);
-    color: #888;
-    border: 1.5px solid #ddd;
-    font-size: .88rem;
-    padding: 10px 20px;
-  }
-  .btn-skip:disabled { opacity: .4; cursor: default; }
-  .btn-phase2 {
-    background: linear-gradient(135deg, #ff8a65, #f4511e);
-    color: white;
-    display: none;
-  }
+.result-box{margin:0 16px 16px;background:rgba(255,255,255,.8);border-radius:16px;padding:14px 16px;box-shadow:0 4px 18px rgba(2,136,209,.13);text-align:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;position:relative;z-index:1}
+.result-box.show{display:block}
+.result-box .result-label{font-size:.75rem;color:#888;margin-bottom:4px}
+.result-slot{background:linear-gradient(135deg,#e0f7fa,#b2ebf2);border:2px solid #4fc3f7;border-radius:12px;padding:8px 16px;font-size:.92rem;font-weight:800;color:#0277bd;min-width:120px;text-align:center;display:none;margin:6px auto}
+.result-slot.show{display:block}
+.result-slot.pulse{animation:pulse .5s ease-in-out}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
 
-  /* 鈹€鈹€鈹€ 绗竴闃舵缁撴灉 鈹€鈹€鈹€ */
-  .result-box {
-    margin: 0 16px 16px;
-    background: rgba(255,255,255,0.8);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    box-shadow: var(--shadow);
-    text-align: center;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    position: relative;
-    z-index: 1;
-  }
-  .result-box.show { display: block; }
-  .result-box .result-label { font-size:.75rem; color:#888; margin-bottom:4px; }
-  .result-slots {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 6px;
-  }
-  .result-slot {
-    background: linear-gradient(135deg,#e0f7fa,#b2ebf2);
-    border: 2px solid #4fc3f7;
-    border-radius: 12px;
-    padding: 8px 16px;
-    font-size: .92rem;
-    font-weight: 800;
-    color: #0277bd;
-    min-width: 120px;
-    text-align: center;
-    transition: all .3s;
-  }
-  .result-slot.pulse {
-    animation: pulse 0.5s ease-in-out;
-  }
-  @keyframes pulse {
-    0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)}
-  }
+.divider{display:flex;align-items:center;gap:10px;margin:10px 16px 16px;position:relative;z-index:1}
+.divider hr{flex:1;border:none;border-top:2px dashed #b2ebf2}
+.divider span{font-size:.8rem;color:#0288d1;white-space:nowrap;font-weight:700}
 
-  /* 鈹€鈹€鈹€ 鍒嗛殧绾?鈹€鈹€鈹€ */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 10px 16px 16px;
-    position: relative;
-    z-index: 1;
-  }
-  .divider hr { flex:1; border:none; border-top:2px dashed #b2ebf2; }
-  .divider span { font-size:.8rem; color:#0288d1; white-space:nowrap; font-weight:700; }
+.phase2-section{margin:0 16px 16px;background:rgba(255,255,255,.82);border-radius:16px;padding:18px 16px 16px;box-shadow:0 4px 18px rgba(2,136,209,.13);text-align:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;position:relative;z-index:1;border:2px solid #ff8a65}
+.phase2-section.show{display:block}
+.phase2-title{font-size:1rem;font-weight:900;color:#f4511e;margin-bottom:4px}
+.phase2-desc{font-size:.75rem;color:#888;margin-bottom:14px}
 
-  /* 鈹€鈹€鈹€ 绗簩闃舵 鈹€鈹€鈹€ */
-  .phase2-section {
-    margin: 0 16px 16px;
-    background: rgba(255,255,255,0.82);
-    border-radius: var(--radius);
-    padding: 18px 16px 16px;
-    box-shadow: var(--shadow);
-    text-align: center;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    position: relative;
-    z-index: 1;
-    border: 2px solid #ff8a65;
-  }
-  .phase2-section.show { display: block; }
-  .phase2-title { font-size:1rem; font-weight:900; color:#f4511e; margin-bottom:4px; }
-  .phase2-desc { font-size:.75rem; color:#888; margin-bottom:14px; }
+.number-wheel{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.num-cell{width:52px;height:58px;border-radius:12px;background:rgba(244,241,235,.9);border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:#555;transition:all .15s;position:relative}
+.num-cell .prob-tiny{font-size:.5rem;font-weight:400;color:#aaa;position:absolute;bottom:3px;line-height:1}
+.num-cell.lit{background:linear-gradient(135deg,#fff9c4,#ffe082);border-color:#ffd740;color:#e65100;box-shadow:0 0 14px rgba(255,193,7,.7);transform:scale(1.1)}
+.num-cell.won-num{background:linear-gradient(135deg,#ff8a65,#f4511e);border-color:#bf360c;color:#fff;box-shadow:0 0 20px rgba(244,81,30,.5);transform:scale(1.15)}
 
-  /* 鏁板瓧杞洏 */
-  .number-wheel {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
-  }
-  .num-cell {
-    width: 46px;
-    height: 52px;
-    border-radius: 12px;
-    background: rgba(244,241,235,0.9);
-    border: 2px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    font-weight: 900;
-    color: #555;
-    transition: all .15s;
-    position: relative;
-  }
-  .num-cell .prob-tiny {
-    font-size: .5rem;
-    font-weight: 400;
-    color: #aaa;
-    position: absolute;
-    bottom: 3px;
-    line-height: 1;
-  }
-  .num-cell.lit {
-    background: linear-gradient(135deg,#fff9c4,#ffe082);
-    border-color: #ffd740;
-    color: #e65100;
-    box-shadow: 0 0 14px rgba(255,193,7,0.7);
-    transform: scale(1.1);
-  }
-  .num-cell.won-num {
-    background: linear-gradient(135deg,#ff8a65,#f4511e);
-    border-color: #bf360c;
-    color: white;
-    box-shadow: 0 0 20px rgba(244,81,30,0.5);
-    transform: scale(1.15);
-  }
+.phase2-result{font-size:1.2rem;font-weight:900;color:#f4511e;margin:10px 0 4px;display:none}
+.phase2-result.show{display:block;animation:pulse .5s ease-in-out}
+.phase2-result-detail{font-size:.78rem;color:#888;display:none}
+.phase2-result-detail.show{display:block}
 
-  .phase2-result {
-    font-size:1.2rem;
-    font-weight:900;
-    color:#f4511e;
-    margin: 10px 0 4px;
-    display: none;
-  }
-  .phase2-result.show { display: block; animation: pulse .5s ease-in-out; }
-  .phase2-result-detail {
-    font-size:.78rem;
-    color:#888;
-    display: none;
-  }
-  .phase2-result-detail.show { display: block; }
+.prob-section{margin:0 16px 16px;position:relative;z-index:1}
+.prob-header{text-align:center;font-size:.72rem;color:#0288d1;font-weight:700;margin-bottom:8px;letter-spacing:1px}
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.prob-item{background:rgba(255,255,255,.65);border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:7px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.prob-label{font-size:.65rem;color:#333;flex:1;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prob-bar-wrap{width:60px;height:6px;background:#e0e0e0;border-radius:3px;flex-shrink:0}
+.prob-bar{height:6px;border-radius:3px;background:linear-gradient(90deg,#4fc3f7,#0288d1);transition:width .8s}
+.prob-pct{font-size:.62rem;color:#0288d1;font-weight:700;width:32px;text-align:right;flex-shrink:0}
 
-  /* 鈹€鈹€鈹€ 姒傜巼璇存槑 鈹€鈹€鈹€ */
-  .prob-section {
-    margin: 0 16px 16px;
-    position: relative;
-    z-index: 1;
-  }
-  .prob-header {
-    text-align: center;
-    font-size: .72rem;
-    color: #0288d1;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-    opacity: .8;
-  }
-  .prob-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-  .prob-item {
-    background: rgba(255,255,255,0.65);
-    border-radius: 10px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-  .prob-label { font-size:.65rem; color:#333; flex:1; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .prob-bar-wrap { width:60px; height:6px; background:#e0e0e0; border-radius:3px; flex-shrink:0; }
-  .prob-bar { height:6px; border-radius:3px; background:linear-gradient(90deg,#4fc3f7,#0288d1); transition:width .8s; }
-  .prob-pct { font-size:.62rem; color:#0288d1; font-weight:700; width:32px; text-align:right; flex-shrink:0; }
-
-  /* 鈹€鈹€鈹€ 璁板綍 鈹€鈹€鈹€ */
-  .record-section {
-    margin: 0 16px;
-    position: relative;
-    z-index: 1;
-  }
-  .record-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-  .record-header h3 { font-size:.85rem; font-weight:900; color:#0277bd; }
-  .record-header .stat { font-size:.72rem; color:#888; }
-  .record-btns { display:flex; gap:6px; }
-  .btn-sm {
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: none;
-    font-size: .7rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .btn-sm:active { transform:scale(.93); }
-  .btn-export { background:#4fc3f7; color:white; }
-  .btn-clear  { background:#ffcdd2; color:#c62828; }
-  .record-table-wrap { overflow-x:auto; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); }
-  table { width:100%; border-collapse:collapse; background:rgba(255,255,255,0.85); font-size:.7rem; }
-  thead tr { background:linear-gradient(135deg,#e0f7fa,#b2ebf2); }
-  th, td { padding:7px 8px; text-align:center; border-bottom:1px solid #e0f7fa; white-space:nowrap; }
-  th { font-weight:800; color:#0277bd; font-size:.67rem; }
-  td { color:#444; }
-  tbody tr:last-child td { border-bottom:none; }
-  tbody tr:nth-child(even) td { background:rgba(224,247,250,0.35); }
-  .badge {
-    display:inline-block;
-    border-radius:8px;
-    padding:2px 7px;
-    font-size:.63rem;
-    font-weight:700;
-  }
-  .badge-blue  { background:#e1f5fe; color:#0277bd; }
-  .badge-amber { background:#fff8e1; color:#e65100; }
-  .badge-green { background:#e8f5e9; color:#2e7d32; }
-  .badge-red   { background:#fce4ec; color:#c62828; }
-  .empty-tip { text-align:center; color:#bbb; padding:18px; font-size:.8rem; }
+.record-section{margin:0 16px;position:relative;z-index:1}
+.record-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.record-header h3{font-size:.85rem;font-weight:900;color:#0277bd}
+.record-header .stat{font-size:.72rem;color:#888}
+.record-btns{display:flex;gap:6px}
+.btn-sm{padding:4px 12px;border-radius:20px;border:none;font-size:.7rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-sm:active{transform:scale(.93)}
+.btn-export{background:#4fc3f7;color:#fff}
+.btn-clear{background:#ffcdd2;color:#c62828}
+.record-table-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+table{width:100%;border-collapse:collapse;background:rgba(255,255,255,.85);font-size:.7rem}
+thead tr{background:linear-gradient(135deg,#e0f7fa,#b2ebf2)}
+th,td{padding:7px 8px;text-align:center;border-bottom:1px solid #e0f7fa;white-space:nowrap}
+th{font-weight:800;color:#0277bd;font-size:.67rem}
+td{color:#444}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even) td{background:rgba(224,247,250,.35)}
+.badge{display:inline-block;border-radius:8px;padding:2px 7px;font-size:.63rem;font-weight:700}
+.badge-blue{background:#e1f5fe;color:#0277bd}
+.badge-amber{background:#fff8e1;color:#e65100}
+.badge-green{background:#e8f5e9;color:#2e7d32}
+.badge-red{background:#fce4ec;color:#c62828}
+.empty-tip{text-align:center;color:#bbb;padding:18px;font-size:.8rem}
 </style>
 </head>
 <body>
 
-<div class="bg-deco tl">馃悷</div>
-<div class="bg-deco tr">馃</div>
-<div class="bg-deco bl">馃悹</div>
-<div class="bg-deco br">馃寠</div>
+<div class="bg-deco tl">🐟</div>
+<div class="bg-deco tr">🫧</div>
+<div class="bg-deco bl">🐠</div>
+<div class="bg-deco br">🌊</div>
 
 <div class="header">
-  <h1>馃悷 楸奸ゲ鏂欐憞鎽囪溅</h1>
-  <p class="sub">鎽囧嚭浣犵殑涓撳睘楸肩伯~</p>
+  <h1>🐟 鱼饲料摇摇车</h1>
+  <p class="sub">摇出你的专属鱼粮~</p>
 </div>
-<div class="deco-row">馃悷 馃悹 馃 馃悺 馃悷</div>
+<div class="deco-row">🐟 🐠 🫧 🐡 🐟</div>
 
-<!-- 闃舵鏍囩 -->
 <div class="phase-tabs">
-  <div class="phase-tab active" id="tab1"><span class="num">鈶?/span> 绗竴闃舵锛氶ゲ鏂欐娊濂?/div>
-  <div class="phase-tab" id="tab2"><span class="num">鈶?/span> 绗簩闃舵锛氭暟瀛楁娊绛?/div>
+  <div class="phase-tab active" id="tab1">① 第一阶段：饲料抽奖</div>
+  <div class="phase-tab" id="tab2">② 第二阶段：数字抽签</div>
 </div>
 
-<!-- 鍝佺鍗＄墖 -->
 <div class="grid-section">
-  <div class="section-title">馃幋 楗叉枡鍝佺被锛堟寜鏁伴噺鍔犳潈鎶藉彇锛?/div>
+  <div class="section-title">🎴 饲料品类（按数量加权抽取）</div>
   <div class="prize-grid" id="prizeGrid"></div>
 </div>
 
-<!-- 鎺у埗鍖?-->
 <div class="ctrl-area">
-  <div class="draw-counter"><span id="drawCounter">绗竴闃舵锛氬彲鎶?<b>1</b> 娆★紝宸叉娊 <b>0</b> 娆?/span></div>
+  <div class="draw-counter"><span id="drawCounter">第一阶段：可抽 <b>1</b> 次，已抽 <b>0</b> 次</span></div>
   <div class="btn-row">
-    <button class="btn btn-draw" id="btnDraw" onclick="doDraw()">馃幆 鎽囦竴鎽?/button>
+    <button class="btn btn-draw" id="btnDraw" onclick="doDraw()">🎯 摇一摇</button>
   </div>
 </div>
 
-<!-- 绗竴闃舵缁撴灉 -->
 <div class="result-box" id="resultBox">
-  <div class="result-label">馃帀 鏈疆鎶藉缁撴灉</div>
-  <div class="result-slots" id="resultSlots">
-    <div class="result-slot" id="slot1" style="display:none">鈥?绗?娆?鈥?/div>
-  </div>
+  <div class="result-label">🎉 本轮抽奖结果</div>
+  <div class="result-slot" id="slot1"></div>
 </div>
 
-<!-- 鍒嗛殧 -->
 <div class="divider">
-  <hr><span>鉁?绗竴闃舵瀹屾垚鍚庤В閿佺浜岄樁娈?/span><hr>
+  <hr><span>✨ 第一阶段完成后解锁第二阶段</span><hr>
 </div>
 
-<!-- 杩涘叆绗簩闃舵鎸夐挳 -->
 <div style="text-align:center;position:relative;z-index:1;margin-bottom:16px;">
-  <button class="btn btn-phase2" id="btnPhase2" onclick="startPhase2()">馃幉 杩涘叆绗簩闃舵 鈫?/button>
+  <button class="btn btn-phase2" id="btnPhase2" onclick="startPhase2()">🎲 进入第二阶段 →</button>
 </div>
 
-<!-- 绗簩闃舵 -->
 <div class="phase2-section" id="phase2Section">
-  <div class="phase2-title">馃幉 绗簩闃舵锛氭暟瀛楁娊绛?/div>
-  <div class="phase2-desc">1-5 闅忔満鏁帮紝鏁板瓧瓒婂ぇ姒傜巼瓒婂ぇ 路 浠呴檺鎶藉彇 1 娆?/div>
+  <div class="phase2-title">🎲 第二阶段：数字抽签</div>
+  <div class="phase2-desc">1-5 随机数，数字越大概率越大 · 仅限抽取 1 次</div>
   <div class="number-wheel" id="numWheel"></div>
-  <button class="btn btn-draw" id="btnDraw2" onclick="doPhase2Draw()" style="margin-bottom:10px;">馃幉 鎶藉彇鏁板瓧</button>
+  <button class="btn btn-draw" id="btnDraw2" onclick="doPhase2Draw()" style="margin-bottom:10px;">🎲 抽取数字</button>
   <div class="phase2-result" id="phase2Result"></div>
   <div class="phase2-result-detail" id="phase2Detail"></div>
 </div>
 
-<!-- 姒傜巼璇存槑 -->
 <div class="prob-section">
-  <div class="prob-header">馃搳 绗竴闃舵姒傜巼鍒嗗竷</div>
+  <div class="prob-header">📊 第一阶段概率分布</div>
   <div class="prob-grid" id="probGrid"></div>
 </div>
 
-<!-- 鍘嗗彶璁板綍 -->
 <div class="record-section">
   <div class="record-header">
     <div>
-      <h3>馃搵 鎶藉璁板綍</h3>
-      <div class="stat" id="recordStat">鍏?0 娆℃娊濂?/div>
+      <h3>📋 抽奖记录</h3>
+      <div class="stat" id="recordStat">共 0 次抽奖</div>
     </div>
     <div class="record-btns">
-      <button class="btn-sm btn-export" onclick="exportCSV()">猬?瀵煎嚭</button>
-      <button class="btn-sm btn-clear" onclick="clearRecords()">馃棏 娓呯┖</button>
+      <button class="btn-sm btn-export" onclick="exportCSV()">⬇ 导出</button>
+      <button class="btn-sm btn-clear" onclick="clearRecords()">🗑 清空</button>
     </div>
   </div>
   <div class="record-table-wrap">
     <table>
       <thead>
-        <tr>
-          <th>#</th>
-          <th>楗叉枡</th>
-          <th>鏁板瓧鎶界</th>
-          <th>鏃堕棿</th>
-        </tr>
+        <tr><th>#</th><th>饲料</th><th>数字抽签</th><th>时间</th></tr>
       </thead>
       <tbody id="recordBody"></tbody>
     </table>
@@ -496,99 +192,106 @@
 </div>
 
 <script>
-/* 鈹€鈹€鈹€ 鏁版嵁 鈹€鈹€鈹€ */
-const prizes = [
-  { name:"鏃ユ竻EP1",         spec:"鍜挭灏忚", qty:5 },
-  { name:"楂樺鍔涘簳鏍栭奔灏忓潡", spec:"鍜挭灏忚", qty:5 },
-  { name:"楂樺鍔涚礌椋熼紶鐗?,   spec:"鍜挭灏忚", qty:5 },
-  { name:"楂樺鍔涜崵椋熼紶鐗?,   spec:"鍜挭灏忚", qty:5 },
-  { name:"楂樺鍔涚礌椋熷ぇ楗?,   spec:"鍜挭灏忚", qty:5 },
-  { name:"楂樺鍔涗豢绾㈣櫕",     spec:"鍜挭灏忚", qty:5 },
-  { name:"JBL鑽ら",         spec:"澶ц100g",  qty:1 },
-  { name:"鍗撳繀鍏嬪崡鏋佺７铏捐创鐗?,spec:"澶ц100g", qty:1 },
-  { name:"鏃ョ储榧犵墖",         spec:"鍜挭灏忚", qty:5 },
-  { name:"鑾柉鐗逛富椋焥鍙?,    spec:"鍜挭灏忚", qty:1 },
-  { name:"鑾柉鐗瑰ぇ钂滅礌",     spec:"鍜挭灏忚", qty:1 },
+var prizes = [
+  {name:"日清EP1",spec:"咪咪小袋",qty:5},
+  {name:"高够力底栖鱼小块",spec:"咪咪小袋",qty:5},
+  {name:"高够力素食鼠片",spec:"咪咪小袋",qty:5},
+  {name:"高够力荤食鼠片",spec:"咪咪小袋",qty:5},
+  {name:"高够力素食大饼",spec:"咪咪小袋",qty:5},
+  {name:"高够力仿红虫",spec:"咪咪小袋",qty:5},
+  {name:"JBL荤食",spec:"大袋100g",qty:1},
+  {name:"卓必克南极磷虾贴片",spec:"大袋100g",qty:1},
+  {name:"日索鼠片",spec:"咪咪小袋",qty:5},
+  {name:"莫斯特主食s号",spec:"咪咪小袋",qty:1},
+  {name:"莫斯特大蒜素",spec:"咪咪小袋",qty:1}
 ];
+var icons = ["🐟","🐠","🐡","🦈","🐋","🦑","🦀","🦞","🦐","🐙","🐬"];
+var numWeights = [1,4,9,16,25];
+var numTotal = 55;
+var totalQty = 39;
+var drawCount = 0;
+var maxDraws = 1;
+var phase2Used = false;
+var animating = false;
+var records = [];
+var currentRecord = null;
 
-const icons = ["馃悷","馃悹","馃悺","馃","馃悑","馃","馃","馃","馃","馃悪","馃惉"];
+try { records = JSON.parse(localStorage.getItem("foodLotteryRecords")||"[]"); } catch(e) { records = []; }
 
-/* 绗簩闃舵锛氭暟瀛?-5锛屼粠澶у埌灏忔鐜囬€掑锛?姒傜巼鏈€楂橈級锛屼娇鐢ㄥ钩鏂规潈閲嶆媺澶у樊璺?*/
-const numWeights = Array.from({length:5},(_,i)=>(i+1)*(i+1)); // [1,4,9,16,25] 鍗?1鈫?, 2鈫?, 3鈫?, 4鈫?6, 5鈫?5
-const numTotal   = numWeights.reduce((a,b)=>a+b,0); // 55
-
-/* 鈹€鈹€鈹€ 鐘舵€?鈹€鈹€鈹€ */
-let drawCount    = 0;  // 宸叉娊娆℃暟锛堢涓€闃舵锛?let maxDraws     = 1;
-let drawResults  = [null, null]; // 涓ゆ缁撴灉
-let phase2Used   = false;
-let animating    = false;
-let records      = JSON.parse(localStorage.getItem("foodLotteryRecords") || "[]");
-let currentRecord = null; // 褰撳墠杩欏眬鐨勮褰曞璞?
-/* 鈹€鈹€鈹€ 鎬绘潈閲?鈹€鈹€鈹€ */
-const totalQty = prizes.reduce((s,p)=>s + (p.qty||0), 0);
-
-/* 鈹€鈹€鈹€ 娓叉煋鍗＄墖 鈹€鈹€鈹€ */
 function renderGrid() {
-  const grid = document.getElementById("prizeGrid");
-  grid.innerHTML = prizes.map((p,i)=>`
-    <div class="prize-card" id="card-${i}">
-      <div class="icon">${icons[i]}</div>
-      <div class="name">${p.name} 脳1</div>
-      <div class="spec">${p.spec}</div>
-      <div class="qty">鍏?{p.qty||0}鍖?/div>
-    </div>
-  `).join("");
-}
-
-/* 鈹€鈹€鈹€ 娓叉煋姒傜巼鏉?鈹€鈹€鈹€ */
-function renderProb() {
-  const grid = document.getElementById("probGrid");
-  grid.innerHTML = prizes.map((p,i)=>{
-    const pct = ((p.qty||0)/totalQty*100).toFixed(1);
-    return `
-      <div class="prob-item">
-        <span style="font-size:.85rem">${icons[i]}</span>
-        <span class="prob-label">${p.name}</span>
-        <div class="prob-bar-wrap"><div class="prob-bar" style="width:${pct}%"></div></div>
-        <span class="prob-pct">${pct}%</span>
-      </div>`;
-  }).join("");
-}
-
-/* 鈹€鈹€鈹€ 鍔犳潈闅忔満 鈹€鈹€鈹€ */
-function weightedRandom() {
-  let r = Math.random() * totalQty;
-  for(let i=0;i<prizes.length;i++){
-    r -= prizes[i].qty||0;
-    if(r<=0) return i;
+  var g = document.getElementById("prizeGrid");
+  var h = "";
+  for (var i = 0; i < prizes.length; i++) {
+    var p = prizes[i];
+    h += '<div class="prize-card" id="card-'+i+'">';
+    h += '<div class="icon">'+icons[i]+'</div>';
+    h += '<div class="name">'+p.name+' &times;1</div>';
+    h += '<div class="spec">'+p.spec+'</div>';
+    h += '<div class="qty">共'+(p.qty||0)+'包</div>';
+    h += '</div>';
   }
-  return prizes.length-1;
+  g.innerHTML = h;
 }
 
-/* 鈹€鈹€鈹€ 鏇存柊鎶芥鏄剧ず 鈹€鈹€鈹€ */
+function renderProb() {
+  var g = document.getElementById("probGrid");
+  var h = "";
+  for (var i = 0; i < prizes.length; i++) {
+    var p = prizes[i];
+    var pct = ((p.qty||0)/totalQty*100).toFixed(1);
+    h += '<div class="prob-item">';
+    h += '<span style="font-size:.85rem">'+icons[i]+'</span>';
+    h += '<span class="prob-label">'+p.name+'</span>';
+    h += '<div class="prob-bar-wrap"><div class="prob-bar" style="width:'+pct+'%"></div></div>';
+    h += '<span class="prob-pct">'+pct+'%</span>';
+    h += '</div>';
+  }
+  g.innerHTML = h;
+}
+
+function renderNumWheel() {
+  var w = document.getElementById("numWheel");
+  var h = "";
+  for (var i = 0; i < 5; i++) {
+    var n = i + 1;
+    var pct = (numWeights[i]/numTotal*100).toFixed(1);
+    h += '<div class="num-cell" id="nc-'+n+'">'+n+'<span class="prob-tiny">'+pct+'%</span></div>';
+  }
+  w.innerHTML = h;
+}
+
 function updateCounter() {
-  document.getElementById("drawCounter").innerHTML =
-    `绗竴闃舵锛氬彲鎶?<b>${maxDraws}</b> 娆★紝宸叉娊 <b>${drawCount}</b> 娆;
+  document.getElementById("drawCounter").innerHTML = '第一阶段：可抽 <b>'+maxDraws+'</b> 次，已抽 <b>'+drawCount+'</b> 次';
 }
 
-/* 鈹€鈹€鈹€ 绗竴闃舵鎶藉 鈹€鈹€鈹€ */
+function weightedRandom() {
+  var r = Math.random() * totalQty;
+  for (var i = 0; i < prizes.length; i++) {
+    r -= prizes[i].qty || 0;
+    if (r <= 0) return i;
+  }
+  return prizes.length - 1;
+}
+
 function doDraw() {
-  if(animating || drawCount >= maxDraws) return;
+  if (animating || drawCount >= maxDraws) return;
   animating = true;
-  document.getElementById("btnDraw").disabled = true;
+  var btn = document.getElementById("btnDraw");
+  if (btn) btn.disabled = true;
 
-  const cards = document.querySelectorAll(".prize-card");
-  let frame = 0;
-  const totalFrames = 30 + drawCount * 10; // 绗簩娆″姩鐢绘洿闀?  const winner = weightedRandom();
+  var cards = document.querySelectorAll(".prize-card");
+  var frame = 0;
+  var totalFrames = 30;
+  var winner = weightedRandom();
 
-  const timer = setInterval(()=>{
-    cards.forEach(c=>c.classList.remove("lit"));
-    const lit = Math.floor(Math.random() * prizes.length);
+  var timer = setInterval(function() {
+    for (var i = 0; i < cards.length; i++) cards[i].classList.remove("lit");
+    var lit = Math.floor(Math.random() * prizes.length);
     cards[lit].classList.add("lit");
     frame++;
-    if(frame >= totalFrames) {
+    if (frame >= totalFrames) {
       clearInterval(timer);
-      cards.forEach(c=>c.classList.remove("lit"));
+      for (var i = 0; i < cards.length; i++) cards[i].classList.remove("lit");
       cards[winner].classList.add("won");
       onDrawDone(winner);
     }
@@ -596,107 +299,82 @@ function doDraw() {
 }
 
 function onDrawDone(winner) {
-  const p = prizes[winner];
+  var p = prizes[winner];
   drawCount++;
-  drawResults[drawCount-1] = { idx: winner, name: p.name, spec: p.spec };
-
-  // 鏄剧ず缁撴灉妗?  const box = document.getElementById("resultBox");
-  box.classList.add("show");
-
-  const slot = document.getElementById("slot" + drawCount);
-  const arrow = document.getElementById("slotArrow");
-  slot.style.display = "block";
-  slot.textContent = `馃帀 绗?{drawCount}娆★細${icons[winner]} ${p.name}`;
-  slot.classList.add("pulse");
-  setTimeout(()=>slot.classList.remove("pulse"), 600);
-  if(drawCount === 2) {
-    if(arrow) arrow.style.display = "block";
+  var box = document.getElementById("resultBox");
+  if (box) box.classList.add("show");
+  var slot = document.getElementById("slot1");
+  if (slot) {
+    slot.classList.add("show");
+    slot.textContent = icons[winner] + " " + p.name + "（" + p.spec + "）";
+    slot.classList.add("pulse");
+    setTimeout(function() { slot.classList.remove("pulse"); }, 600);
   }
-
   updateCounter();
   animating = false;
-
-  // 鎶藉畬锛岃В閿佺浜岄樁娈?  document.getElementById("btnDraw").disabled = true;
+  var btn = document.getElementById("btnDraw");
+  if (btn) btn.disabled = true;
   unlockPhase2();
 }
 
-/* 鈹€鈹€鈹€ 璺宠繃绗?娆?鈹€鈹€鈹€ */
-function skipSecondDraw() {
-  if(drawCount !== 1) return;
-  drawCount = maxDraws; // 鏍囪涓哄凡瀹屾垚
-  const slot2 = document.getElementById("slot2");
-  slot2.style.display = "block";
-  slot2.textContent = "锛堣烦杩囩2娆★級";
-  slot2.style.color = "#bbb";
-  document.getElementById("btnDraw").disabled = true;
-  document.getElementById("btnSkip").disabled = true;
-  unlockPhase2();
-}
-
-/* 鈹€鈹€鈹€ 瑙ｉ攣绗簩闃舵 鈹€鈹€鈹€ */
 function unlockPhase2() {
-  document.getElementById("tab1").classList.remove("active");
-  document.getElementById("tab1").classList.add("done");
-  document.getElementById("tab2").classList.add("active");
-  const btn = document.getElementById("btnPhase2");
-  btn.style.display = "inline-block";
-
-  // 鍒濆鍖栧綋鍓嶈褰曞璞★紙绛夌浜岄樁娈靛畬鎴愬啀淇濆瓨锛?  currentRecord = {
-    draw1: drawResults[0] ? drawResults[0].name : "鈥?,
-    draw1spec: drawResults[0] ? drawResults[0].spec : "",
-    draw2: "",
-    draw2spec: "",
+  var t1 = document.getElementById("tab1");
+  var t2 = document.getElementById("tab2");
+  if (t1) { t1.classList.remove("active"); t1.classList.add("done"); }
+  if (t2) t2.classList.add("active");
+  var btn = document.getElementById("btnPhase2");
+  if (btn) btn.style.display = "inline-block";
+  currentRecord = {
+    feed: prizes[weightedRandom()] ? prizes[weightedRandom()].name : "",
     num: null,
-    numDetail: "",
-    time: new Date().toLocaleString("zh-CN",{hour12:false})
+    time: new Date().toLocaleString("zh-CN", {hour12:false})
   };
+  // fix: re-get the actual drawn prize
+  for (var i = 0; i < prizes.length; i++) {
+    var card = document.getElementById("card-"+i);
+    if (card && card.classList.contains("won")) {
+      currentRecord.feed = prizes[i].name;
+      currentRecord.feedspec = prizes[i].spec;
+      break;
+    }
+  }
 }
 
-/* 鈹€鈹€鈹€ 鍚姩绗簩闃舵 鈹€鈹€鈹€ */
 function startPhase2() {
-  document.getElementById("phase2Section").classList.add("show");
-  document.getElementById("btnPhase2").style.display = "none";
-  document.getElementById("phase2Section").scrollIntoView({behavior:"smooth", block:"nearest"});
+  var sec = document.getElementById("phase2Section");
+  if (sec) sec.classList.add("show");
+  var btn = document.getElementById("btnPhase2");
+  if (btn) btn.style.display = "none";
+  if (sec) sec.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
-/* 鈹€鈹€鈹€ 娓叉煋鏁板瓧鏍?鈹€鈹€鈹€ */
-function renderNumWheel() {
-  const wheel = document.getElementById("numWheel");
-  wheel.innerHTML = Array.from({length:5},(_,i)=>{
-    const n = i+1;
-    const pct = (numWeights[i]/numTotal*100).toFixed(1);
-    return `<div class="num-cell" id="nc-${n}">
-      ${n}
-      <span class="prob-tiny">${pct}%</span>
-    </div>`;
-  }).join("");
-}
-
-/* 鈹€鈹€鈹€ 绗簩闃舵鎶藉 鈹€鈹€鈹€ */
 function doPhase2Draw() {
-  if(phase2Used || animating) return;
+  if (phase2Used || animating) return;
   animating = true;
-  document.getElementById("btnDraw2").disabled = true;
+  var btn = document.getElementById("btnDraw2");
+  if (btn) btn.disabled = true;
 
-  // 鍔犳潈闅忔満閫夋暟瀛?  let r = Math.random() * numTotal;
-  let winner = 1;
-  for(let i=0;i<5;i++){
+  var r = Math.random() * numTotal;
+  var winner = 1;
+  for (var i = 0; i < 5; i++) {
     r -= numWeights[i];
-    if(r<=0){ winner = i+1; break; }
+    if (r <= 0) { winner = i + 1; break; }
   }
 
-  const cells = document.querySelectorAll(".num-cell");
-  let frame = 0, totalFrames = 36;
+  var cells = document.querySelectorAll(".num-cell");
+  var frame = 0;
+  var totalFrames = 36;
 
-  const timer = setInterval(()=>{
-    cells.forEach(c=>c.classList.remove("lit"));
-    const lit = Math.floor(Math.random()*5);
+  var timer = setInterval(function() {
+    for (var i = 0; i < cells.length; i++) cells[i].classList.remove("lit");
+    var lit = Math.floor(Math.random() * 5);
     cells[lit].classList.add("lit");
     frame++;
-    if(frame >= totalFrames) {
+    if (frame >= totalFrames) {
       clearInterval(timer);
-      cells.forEach(c=>c.classList.remove("lit"));
-      document.getElementById("nc-"+winner).classList.add("won-num");
+      for (var i = 0; i < cells.length; i++) cells[i].classList.remove("lit");
+      var wonCell = document.getElementById("nc-"+winner);
+      if (wonCell) wonCell.classList.add("won-num");
       onPhase2Done(winner);
     }
   }, 80);
@@ -705,81 +383,72 @@ function doPhase2Draw() {
 function onPhase2Done(winner) {
   phase2Used = true;
   animating = false;
-  const pct = (numWeights[winner-1]/numTotal*100).toFixed(1);
-
-  const res = document.getElementById("phase2Result");
-  const det = document.getElementById("phase2Detail");
-  res.textContent = `馃幉 鎶藉埌鏁板瓧锛?{winner}`;
-  res.classList.add("show");
-  det.textContent = `姒傜巼 ${pct}%锛堟暟瀛楄秺澶т腑濂栨鐜囪秺楂橈級`;
-  det.classList.add("show");
-
-  document.getElementById("tab2").classList.remove("active");
-  document.getElementById("tab2").classList.add("done");
-
-  // 淇濆瓨璁板綍
-  if(currentRecord) {
+  var pct = (numWeights[winner-1]/numTotal*100).toFixed(1);
+  var res = document.getElementById("phase2Result");
+  var det = document.getElementById("phase2Detail");
+  if (res) { res.textContent = "🎲 抽到数字：" + winner; res.classList.add("show"); }
+  if (det) { det.textContent = "概率 " + pct + "%（数字越大中奖概率越高）"; det.classList.add("show"); }
+  var t2 = document.getElementById("tab2");
+  if (t2) { t2.classList.remove("active"); t2.classList.add("done"); }
+  if (currentRecord) {
     currentRecord.num = winner;
-    currentRecord.numDetail = pct + "%";
     records.push(currentRecord);
-    localStorage.setItem("foodLotteryRecords", JSON.stringify(records));
+    try { localStorage.setItem("foodLotteryRecords", JSON.stringify(records)); } catch(e) {}
     renderRecords();
   }
 }
 
-/* 鈹€鈹€鈹€ 娓叉煋璁板綍 鈹€鈹€鈹€ */
 function renderRecords() {
-  const tbody = document.getElementById("recordBody");
-  const stat  = document.getElementById("recordStat");
-  stat.textContent = `鍏?${records.length} 娆″畬鏁存娊濂朻;
-  if(!records.length){
-    tbody.innerHTML = `<tr><td colspan="4" class="empty-tip">鏆傛棤璁板綍</td></tr>`;
+  var tbody = document.getElementById("recordBody");
+  var stat = document.getElementById("recordStat");
+  if (!tbody) return;
+  stat.textContent = "共 " + records.length + " 次完整抽奖";
+  if (!records.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-tip">暂无记录</td></tr>';
     return;
   }
-  tbody.innerHTML = records.slice().reverse().map((r,i)=>{
-    const num = r.num !== null ? r.num : "鈥?;
-    let numBadge = "";
-    if(r.num !== null) {
-      const cls = r.num <= 3 ? "badge-green" : r.num <= 6 ? "badge-blue" : r.num <= 8 ? "badge-amber" : "badge-red";
-      numBadge = `<span class="badge ${cls}">${r.num}</span>`;
+  var h = "";
+  for (var i = records.length - 1; i >= 0; i--) {
+    var r = records[i];
+    var numBadge = "";
+    if (r.num !== null && r.num !== undefined) {
+      var cls = r.num <= 2 ? "badge-green" : r.num <= 3 ? "badge-blue" : r.num <= 4 ? "badge-amber" : "badge-red";
+      numBadge = '<span class="badge '+cls+'">'+r.num+'</span>';
     } else {
-      numBadge = `<span style="color:#ccc">鈥?/span>`;
+      numBadge = '<span style="color:#ccc">—</span>';
     }
-    return `<tr>
-      <td>${records.length - i}</td>
-      <td><span class="badge badge-blue">${r.draw1}</span></td>
-      <td>${numBadge}</td>
-      <td style="color:#aaa;font-size:.63rem">${r.time}</td>
-    </tr>`;
-  }).join("");
+    h += '<tr><td>'+(records.length-i)+'</td>';
+    h += '<td><span class="badge badge-blue">'+(r.feed||"—")+'</span></td>';
+    h += '<td>'+numBadge+'</td>';
+    h += '<td style="color:#aaa;font-size:.63rem">'+r.time+'</td></tr>';
+  }
+  tbody.innerHTML = h;
 }
 
-/* 鈹€鈹€鈹€ 瀵煎嚭 CSV 鈹€鈹€鈹€ */
 function exportCSV() {
-  if(!records.length){ alert("鏆傛棤璁板綍鍙鍑?); return; }
-  const bom = "\uFEFF";
-  const header = "#,楗叉枡,鏁板瓧鎶界,鏃堕棿\n";
-  const rows = records.map((r,i)=>
-    `${i+1},"${r.draw1}(${r.draw1spec})","${r.num||'鈥?}",${r.time}`
-  ).join("\n");
-  const blob = new Blob([bom+header+rows],{type:"text/csv;charset=utf-8"});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
+  if (!records.length) { alert("暂无记录可导出"); return; }
+  var bom = "\uFEFF";
+  var csv = "#,饲料,数字抽签,时间\n";
+  for (var i = 0; i < records.length; i++) {
+    var r = records[i];
+    csv += (i+1)+',"'+r.feed+'","'+(r.num||"—")+'",'+r.time+'\n';
+  }
+  var blob = new Blob([bom+csv], {type:"text/csv;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
   a.href = url;
-  a.download = `楸奸ゲ鏂欐娊濂栬褰昣${new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")}.csv`;
+  a.download = "鱼饲料抽奖记录_" + new Date().toLocaleDateString("zh-CN").replace(/\//g,"-") + ".csv";
   a.click();
   URL.revokeObjectURL(url);
 }
 
-/* 鈹€鈹€鈹€ 娓呯┖璁板綍 鈹€鈹€鈹€ */
 function clearRecords() {
-  if(!confirm("纭畾娓呯┖鎵€鏈夋娊濂栬褰曪紵姝ゆ搷浣滀笉鍙仮澶嶃€?)) return;
+  if (!confirm("确定清空所有抽奖记录？此操作不可恢复。")) return;
   records = [];
-  localStorage.removeItem("foodLotteryRecords");
+  try { localStorage.removeItem("foodLotteryRecords"); } catch(e) {}
   renderRecords();
 }
 
-/* 鈹€鈹€鈹€ 鍒濆鍖?鈹€鈹€鈹€ */
 renderGrid();
 renderProb();
 renderNumWheel();
