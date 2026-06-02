@@ -428,10 +428,9 @@
 
 <!-- 控制区 -->
 <div class="ctrl-area">
-  <div class="draw-counter"><span id="drawCounter">第一阶段：可抽 <b>2</b> 次，已抽 <b>0</b> 次</span></div>
+  <div class="draw-counter"><span id="drawCounter">第一阶段：可抽 <b>1</b> 次，已抽 <b>0</b> 次</span></div>
   <div class="btn-row">
     <button class="btn btn-draw" id="btnDraw" onclick="doDraw()">🎯 摇一摇</button>
-    <button class="btn btn-skip" id="btnSkip" onclick="skipSecondDraw()" disabled>跳过第2次</button>
   </div>
 </div>
 
@@ -440,8 +439,6 @@
   <div class="result-label">🎉 本轮抽奖结果</div>
   <div class="result-slots" id="resultSlots">
     <div class="result-slot" id="slot1" style="display:none">— 第1次 —</div>
-    <div style="font-size:1.2rem;color:#ccc" id="slotArrow" style="display:none">→</div>
-    <div class="result-slot" id="slot2" style="display:none">— 第2次 —</div>
   </div>
 </div>
 
@@ -488,8 +485,7 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>第1次饲料</th>
-          <th>第2次饲料</th>
+          <th>饲料</th>
           <th>数字抽签</th>
           <th>时间</th>
         </tr>
@@ -523,7 +519,7 @@ const numTotal   = numWeights.reduce((a,b)=>a+b,0); // 55
 
 /* ─── 状态 ─── */
 let drawCount    = 0;  // 已抽次数（第一阶段）
-let maxDraws     = 2;
+let maxDraws     = 1;
 let drawResults  = [null, null]; // 两次结果
 let phase2Used   = false;
 let animating    = false;
@@ -625,16 +621,9 @@ function onDrawDone(winner) {
   updateCounter();
   animating = false;
 
-  if(drawCount === 1) {
-    // 第一次抽完，开放第二次和跳过
-    document.getElementById("btnDraw").disabled = false;
-    document.getElementById("btnSkip").disabled = false;
-  } else if(drawCount >= maxDraws) {
-    // 两次抽完，解锁第二阶段
-    document.getElementById("btnDraw").disabled = true;
-    document.getElementById("btnSkip").disabled = true;
-    unlockPhase2();
-  }
+  // 抽完，解锁第二阶段
+  document.getElementById("btnDraw").disabled = true;
+  unlockPhase2();
 }
 
 /* ─── 跳过第2次 ─── */
@@ -662,8 +651,8 @@ function unlockPhase2() {
   currentRecord = {
     draw1: drawResults[0] ? drawResults[0].name : "—",
     draw1spec: drawResults[0] ? drawResults[0].spec : "",
-    draw2: drawResults[1] ? drawResults[1].name : "跳过",
-    draw2spec: drawResults[1] ? drawResults[1].spec : "",
+    draw2: "",
+    draw2spec: "",
     num: null,
     numDetail: "",
     time: new Date().toLocaleString("zh-CN",{hour12:false})
@@ -752,7 +741,7 @@ function renderRecords() {
   const stat  = document.getElementById("recordStat");
   stat.textContent = `共 ${records.length} 次完整抽奖`;
   if(!records.length){
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-tip">暂无记录</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="empty-tip">暂无记录</td></tr>`;
     return;
   }
   tbody.innerHTML = records.slice().reverse().map((r,i)=>{
@@ -767,7 +756,6 @@ function renderRecords() {
     return `<tr>
       <td>${records.length - i}</td>
       <td><span class="badge badge-blue">${r.draw1}</span></td>
-      <td>${r.draw2==="跳过" ? `<span style="color:#ccc">跳过</span>` : `<span class="badge badge-blue">${r.draw2}</span>`}</td>
       <td>${numBadge}</td>
       <td style="color:#aaa;font-size:.63rem">${r.time}</td>
     </tr>`;
@@ -778,9 +766,9 @@ function renderRecords() {
 function exportCSV() {
   if(!records.length){ alert("暂无记录可导出"); return; }
   const bom = "\uFEFF";
-  const header = "#,第1次饲料,第2次饲料,数字抽签,时间\n";
+  const header = "#,饲料,数字抽签,时间\n";
   const rows = records.map((r,i)=>
-    `${i+1},"${r.draw1}(${r.draw1spec})","${r.draw2}${r.draw2spec?'('+r.draw2spec+')':''}","${r.num||'—'}",${r.time}`
+    `${i+1},"${r.draw1}(${r.draw1spec})","${r.num||'—'}",${r.time}`
   ).join("\n");
   const blob = new Blob([bom+header+rows],{type:"text/csv;charset=utf-8"});
   const url  = URL.createObjectURL(blob);
