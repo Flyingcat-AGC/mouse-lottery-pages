@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🐟 鱼饲料摇摇车</title>
+<style>
+  :root {
+    --c1: #4fc3f7;
+    --c2: #0288d1;
+    --c3: #e0f7fa;
+    --c4: #b2ebf2;
+    --accent: #ff8a65;
+    --gold: #ffd54f;
+    --green: #a5d6a7;
+    --pink: #f48fb1;
+    --radius: 16px;
+    --shadow: 0 4px 18px rgba(2,136,209,0.13);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 40%, #e8f5e9 100%);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ─── 背景装饰 ─── */
+  .bg-deco { position:fixed; font-size:3.5rem; opacity:.08; pointer-events:none; z-index:0; animation:float 8s ease-in-out infinite; }
+  .bg-deco.tl { top:4%; left:2%; }
+  .bg-deco.tr { top:4%; right:2%; animation-delay:2s; }
+  .bg-deco.bl { bottom:8%; left:2%; animation-delay:4s; }
+  .bg-deco.br { bottom:8%; right:2%; animation-delay:6s; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+  /* ─── 标题 ─── */
+  .header { text-align:center; padding:32px 16px 8px; position:relative; z-index:1; }
+  .header h1 { font-size:1.9rem; color:#0277bd; font-weight:900; letter-spacing:2px; text-shadow:0 2px 8px rgba(2,119,189,0.15); }
+  .header .sub { margin-top:6px; color:#0288d1; font-size:.88rem; opacity:.85; }
+  .deco-row { text-align:center; font-size:1.4rem; letter-spacing:6px; margin:6px 0 12px; }
+
+  /* ─── 阶段标签 ─── */
+  .phase-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 16px 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .phase-tab {
+    flex: 1;
+    max-width: 200px;
+    padding: 10px 16px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    background: rgba(255,255,255,0.5);
+    color: #888;
+    font-size: .88rem;
+    font-weight: 700;
+    text-align: center;
+    transition: all .3s;
+    cursor: default;
+  }
+  .phase-tab.active {
+    background: linear-gradient(135deg, var(--c1), var(--c2));
+    color: white;
+    border-color: var(--c2);
+    box-shadow: 0 3px 14px rgba(2,136,209,0.3);
+  }
+  .phase-tab.done {
+    background: var(--green);
+    color: #2e7d32;
+    border-color: #81c784;
+  }
+  .phase-tab .num { font-size:1.1rem; }
+
+  /* ─── 卡片网格 ─── */
+  .grid-section { position:relative; z-index:1; padding:0 12px; }
+  .section-title {
+    text-align: center;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #0288d1;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    opacity: .8;
+  }
+  .prize-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  @media(max-width:400px) { .prize-grid { grid-template-columns: repeat(3,1fr); } }
+
+  .prize-card {
+    background: rgba(255,255,255,0.75);
+    border-radius: var(--radius);
+    padding: 10px 6px 8px;
+    text-align: center;
+    border: 2px solid transparent;
+    box-shadow: var(--shadow);
+    transition: all .2s;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden;
+  }
+  .prize-card.lit {
+    background: linear-gradient(135deg,#fff9c4,#ffe082);
+    border-color: #ffd740;
+    box-shadow: 0 0 18px rgba(255,213,64,0.7);
+    transform: scale(1.04);
+    z-index: 2;
+  }
+  .prize-card.won {
+    background: linear-gradient(135deg,#b2dfdb,#80cbc4);
+    border-color: #26a69a;
+    box-shadow: 0 0 20px rgba(38,166,154,0.5);
+    transform: scale(1.06);
+  }
+  .prize-card .icon { font-size:1.5rem; margin-bottom:3px; }
+  .prize-card .name { font-size:.65rem; font-weight:700; color:#0277bd; line-height:1.3; }
+  .prize-card .spec { font-size:.57rem; color:#888; margin-top:2px; }
+  .prize-card .qty  { display:inline-block; margin-top:3px; background:rgba(2,136,209,0.1); border-radius:10px; padding:1px 7px; font-size:.58rem; color:#0288d1; }
+
+  /* ─── 第一阶段控制区 ─── */
+  .ctrl-area {
+    text-align: center;
+    padding: 0 16px 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .draw-counter {
+    margin-bottom: 10px;
+    font-size: .82rem;
+    color: #0288d1;
+    font-weight: 600;
+  }
+  .draw-counter span {
+    display: inline-block;
+    background: rgba(255,255,255,0.7);
+    border-radius: 50px;
+    padding: 4px 14px;
+    border: 1.5px solid #b2ebf2;
+  }
+  .btn-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+  }
+  .btn:active { transform: scale(0.94); }
+  .btn-draw {
+    background: linear-gradient(135deg, #4fc3f7, #0288d1);
+    color: white;
+  }
+  .btn-draw:disabled {
+    background: #ccc;
+    cursor: default;
+    box-shadow: none;
+  }
+  .btn-skip {
+    background: rgba(255,255,255,0.8);
+    color: #888;
+    border: 1.5px solid #ddd;
+    font-size: .88rem;
+    padding: 10px 20px;
+  }
+  .btn-skip:disabled { opacity: .4; cursor: default; }
+  .btn-phase2 {
+    background: linear-gradient(135deg, #ff8a65, #f4511e);
+    color: white;
+    display: none;
+  }
+
+  /* ─── 第一阶段结果 ─── */
+  .result-box {
+    margin: 0 16px 16px;
+    background: rgba(255,255,255,0.8);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    position: relative;
+    z-index: 1;
+  }
+  .result-box.show { display: block; }
+  .result-box .result-label { font-size:.75rem; color:#888; margin-bottom:4px; }
+  .result-slots {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .result-slot {
+    background: linear-gradient(135deg,#e0f7fa,#b2ebf2);
+    border: 2px solid #4fc3f7;
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: .92rem;
+    font-weight: 800;
+    color: #0277bd;
+    min-width: 120px;
+    text-align: center;
+    transition: all .3s;
+  }
+  .result-slot.pulse {
+    animation: pulse 0.5s ease-in-out;
+  }
+  @keyframes pulse {
+    0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)}
+  }
+
+  /* ─── 分隔线 ─── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 16px 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .divider hr { flex:1; border:none; border-top:2px dashed #b2ebf2; }
+  .divider span { font-size:.8rem; color:#0288d1; white-space:nowrap; font-weight:700; }
+
+  /* ─── 第二阶段 ─── */
+  .phase2-section {
+    margin: 0 16px 16px;
+    background: rgba(255,255,255,0.82);
+    border-radius: var(--radius);
+    padding: 18px 16px 16px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    position: relative;
+    z-index: 1;
+    border: 2px solid #ff8a65;
+  }
+  .phase2-section.show { display: block; }
+  .phase2-title { font-size:1rem; font-weight:900; color:#f4511e; margin-bottom:4px; }
+  .phase2-desc { font-size:.75rem; color:#888; margin-bottom:14px; }
+
+  /* 数字转盘 */
+  .number-wheel {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .num-cell {
+    width: 46px;
+    height: 52px;
+    border-radius: 12px;
+    background: rgba(244,241,235,0.9);
+    border: 2px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #555;
+    transition: all .15s;
+    position: relative;
+  }
+  .num-cell .prob-tiny {
+    font-size: .5rem;
+    font-weight: 400;
+    color: #aaa;
+    position: absolute;
+    bottom: 3px;
+    line-height: 1;
+  }
+  .num-cell.lit {
+    background: linear-gradient(135deg,#fff9c4,#ffe082);
+    border-color: #ffd740;
+    color: #e65100;
+    box-shadow: 0 0 14px rgba(255,193,7,0.7);
+    transform: scale(1.1);
+  }
+  .num-cell.won-num {
+    background: linear-gradient(135deg,#ff8a65,#f4511e);
+    border-color: #bf360c;
+    color: white;
+    box-shadow: 0 0 20px rgba(244,81,30,0.5);
+    transform: scale(1.15);
+  }
+
+  .phase2-result {
+    font-size:1.2rem;
+    font-weight:900;
+    color:#f4511e;
+    margin: 10px 0 4px;
+    display: none;
+  }
+  .phase2-result.show { display: block; animation: pulse .5s ease-in-out; }
+  .phase2-result-detail {
+    font-size:.78rem;
+    color:#888;
+    display: none;
+  }
+  .phase2-result-detail.show { display: block; }
+
+  /* ─── 概率说明 ─── */
+  .prob-section {
+    margin: 0 16px 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .prob-header {
+    text-align: center;
+    font-size: .72rem;
+    color: #0288d1;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    opacity: .8;
+  }
+  .prob-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .prob-item {
+    background: rgba(255,255,255,0.65);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .prob-label { font-size:.65rem; color:#333; flex:1; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .prob-bar-wrap { width:60px; height:6px; background:#e0e0e0; border-radius:3px; flex-shrink:0; }
+  .prob-bar { height:6px; border-radius:3px; background:linear-gradient(90deg,#4fc3f7,#0288d1); transition:width .8s; }
+  .prob-pct { font-size:.62rem; color:#0288d1; font-weight:700; width:32px; text-align:right; flex-shrink:0; }
+
+  /* ─── 记录 ─── */
+  .record-section {
+    margin: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .record-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .record-header h3 { font-size:.85rem; font-weight:900; color:#0277bd; }
+  .record-header .stat { font-size:.72rem; color:#888; }
+  .record-btns { display:flex; gap:6px; }
+  .btn-sm {
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: none;
+    font-size: .7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-sm:active { transform:scale(.93); }
+  .btn-export { background:#4fc3f7; color:white; }
+  .btn-clear  { background:#ffcdd2; color:#c62828; }
+  .record-table-wrap { overflow-x:auto; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); }
+  table { width:100%; border-collapse:collapse; background:rgba(255,255,255,0.85); font-size:.7rem; }
+  thead tr { background:linear-gradient(135deg,#e0f7fa,#b2ebf2); }
+  th, td { padding:7px 8px; text-align:center; border-bottom:1px solid #e0f7fa; white-space:nowrap; }
+  th { font-weight:800; color:#0277bd; font-size:.67rem; }
+  td { color:#444; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:nth-child(even) td { background:rgba(224,247,250,0.35); }
+  .badge {
+    display:inline-block;
+    border-radius:8px;
+    padding:2px 7px;
+    font-size:.63rem;
+    font-weight:700;
+  }
+  .badge-blue  { background:#e1f5fe; color:#0277bd; }
+  .badge-amber { background:#fff8e1; color:#e65100; }
+  .badge-green { background:#e8f5e9; color:#2e7d32; }
+  .badge-red   { background:#fce4ec; color:#c62828; }
+  .empty-tip { text-align:center; color:#bbb; padding:18px; font-size:.8rem; }
+</style>
+</head>
+<body>
+
+<div class="bg-deco tl">🐟</div>
+<div class="bg-deco tr">🫧</div>
+<div class="bg-deco bl">🐠</div>
+<div class="bg-deco br">🌊</div>
+
+<div class="header">
+  <h1>🐟 鱼饲料摇摇车</h1>
+  <p class="sub">摇出你的专属鱼粮~</p>
+</div>
+<div class="deco-row">🐟 🐠 🫧 🐡 🐟</div>
+
+<!-- 阶段标签 -->
+<div class="phase-tabs">
+  <div class="phase-tab active" id="tab1"><span class="num">①</span> 第一阶段：饲料抽奖</div>
+  <div class="phase-tab" id="tab2"><span class="num">②</span> 第二阶段：数字抽签</div>
+</div>
+
+<!-- 品种卡片 -->
+<div class="grid-section">
+  <div class="section-title">🎴 饲料品类（按数量加权抽取）</div>
+  <div class="prize-grid" id="prizeGrid"></div>
+</div>
+
+<!-- 控制区 -->
+<div class="ctrl-area">
+  <div class="draw-counter"><span id="drawCounter">第一阶段：可抽 <b>2</b> 次，已抽 <b>0</b> 次</span></div>
+  <div class="btn-row">
+    <button class="btn btn-draw" id="btnDraw" onclick="doDraw()">🎯 摇一摇</button>
+    <button class="btn btn-skip" id="btnSkip" onclick="skipSecondDraw()" disabled>跳过第2次</button>
+  </div>
+</div>
+
+<!-- 第一阶段结果 -->
+<div class="result-box" id="resultBox">
+  <div class="result-label">🎉 本轮抽奖结果</div>
+  <div class="result-slots" id="resultSlots">
+    <div class="result-slot" id="slot1" style="display:none">— 第1次 —</div>
+    <div style="font-size:1.2rem;color:#ccc" id="slotArrow" style="display:none">→</div>
+    <div class="result-slot" id="slot2" style="display:none">— 第2次 —</div>
+  </div>
+</div>
+
+<!-- 分隔 -->
+<div class="divider">
+  <hr><span>✨ 第一阶段完成后解锁第二阶段</span><hr>
+</div>
+
+<!-- 进入第二阶段按钮 -->
+<div style="text-align:center;position:relative;z-index:1;margin-bottom:16px;">
+  <button class="btn btn-phase2" id="btnPhase2" onclick="startPhase2()">🎲 进入第二阶段 →</button>
+</div>
+
+<!-- 第二阶段 -->
+<div class="phase2-section" id="phase2Section">
+  <div class="phase2-title">🎲 第二阶段：数字抽签</div>
+  <div class="phase2-desc">1-10 随机数，数字越大概率越低 · 仅限抽取 1 次</div>
+  <div class="number-wheel" id="numWheel"></div>
+  <button class="btn btn-draw" id="btnDraw2" onclick="doPhase2Draw()" style="margin-bottom:10px;">🎲 抽取数字</button>
+  <div class="phase2-result" id="phase2Result"></div>
+  <div class="phase2-result-detail" id="phase2Detail"></div>
+</div>
+
+<!-- 概率说明 -->
+<div class="prob-section">
+  <div class="prob-header">📊 第一阶段概率分布</div>
+  <div class="prob-grid" id="probGrid"></div>
+</div>
+
+<!-- 历史记录 -->
+<div class="record-section">
+  <div class="record-header">
+    <div>
+      <h3>📋 抽奖记录</h3>
+      <div class="stat" id="recordStat">共 0 次抽奖</div>
+    </div>
+    <div class="record-btns">
+      <button class="btn-sm btn-export" onclick="exportCSV()">⬇ 导出</button>
+      <button class="btn-sm btn-clear" onclick="clearRecords()">🗑 清空</button>
+    </div>
+  </div>
+  <div class="record-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>第1次饲料</th>
+          <th>第2次饲料</th>
+          <th>数字抽签</th>
+          <th>时间</th>
+        </tr>
+      </thead>
+      <tbody id="recordBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+/* ─── 数据 ─── */
+const prizes = [
+  { name:"日清EP1",         spec:"咪咪小袋", qty:5 },
+  { name:"高够力底栖鱼小块", spec:"咪咪小袋", qty:5 },
+  { name:"高够力素食鼠片",   spec:"咪咪小袋", qty:5 },
+  { name:"高够力荤食鼠片",   spec:"咪咪小袋", qty:5 },
+  { name:"高够力素食大饼",   spec:"咪咪小袋", qty:5 },
+  { name:"高够力仿红虫",     spec:"咪咪小袋", qty:5 },
+  { name:"JBL荤食",         spec:"大袋100g",  qty:1 },
+  { name:"卓必克南极磷虾贴片",spec:"大袋100g", qty:1 },
+  { name:"日索鼠片",         spec:"咪咪小袋", qty:5 },
+  { name:"莫斯特主食s号",    spec:"咪咪小袋", qty:1 },
+  { name:"莫斯特大蒜素",     spec:"咪咪小袋", qty:1 },
+];
+
+const icons = ["🐟","🐠","🐡","🦈","🐋","🦑","🦀","🦞","🦐","🐙","🐬"];
+
+/* 第二阶段：数字1-10，概率递减。权重用 (11-n)，即 n=1→10, n=2→9 ... n=10→1 */
+const numWeights = Array.from({length:10},(_,i)=>10-i); // [10,9,8,7,6,5,4,3,2,1]
+const numTotal   = numWeights.reduce((a,b)=>a+b,0); // 55
+
+/* ─── 状态 ─── */
+let drawCount    = 0;  // 已抽次数（第一阶段）
+let maxDraws     = 2;
+let drawResults  = [null, null]; // 两次结果
+let phase2Used   = false;
+let animating    = false;
+let records      = JSON.parse(localStorage.getItem("foodLotteryRecords") || "[]");
+let currentRecord = null; // 当前这局的记录对象
+
+/* ─── 总权重 ─── */
+const totalQty = prizes.reduce((s,p)=>s + (p.qty||0), 0);
+
+/* ─── 渲染卡片 ─── */
+function renderGrid() {
+  const grid = document.getElementById("prizeGrid");
+  grid.innerHTML = prizes.map((p,i)=>`
+    <div class="prize-card" id="card-${i}">
+      <div class="icon">${icons[i]}</div>
+      <div class="name">${p.name} ×1</div>
+      <div class="spec">${p.spec}</div>
+      <div class="qty">共${p.qty||0}包</div>
+    </div>
+  `).join("");
+}
+
+/* ─── 渲染概率条 ─── */
+function renderProb() {
+  const grid = document.getElementById("probGrid");
+  grid.innerHTML = prizes.map((p,i)=>{
+    const pct = ((p.qty||0)/totalQty*100).toFixed(1);
+    return `
+      <div class="prob-item">
+        <span style="font-size:.85rem">${icons[i]}</span>
+        <span class="prob-label">${p.name}</span>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:${pct}%"></div></div>
+        <span class="prob-pct">${pct}%</span>
+      </div>`;
+  }).join("");
+}
+
+/* ─── 加权随机 ─── */
+function weightedRandom() {
+  let r = Math.random() * totalQty;
+  for(let i=0;i<prizes.length;i++){
+    r -= prizes[i].qty||0;
+    if(r<=0) return i;
+  }
+  return prizes.length-1;
+}
+
+/* ─── 更新抽次显示 ─── */
+function updateCounter() {
+  document.getElementById("drawCounter").innerHTML =
+    `第一阶段：可抽 <b>${maxDraws}</b> 次，已抽 <b>${drawCount}</b> 次`;
+}
+
+/* ─── 第一阶段抽奖 ─── */
+function doDraw() {
+  if(animating || drawCount >= maxDraws) return;
+  animating = true;
+  document.getElementById("btnDraw").disabled = true;
+  document.getElementById("btnSkip").disabled = true;
+
+  const cards = document.querySelectorAll(".prize-card");
+  let frame = 0;
+  const totalFrames = 30 + drawCount * 10; // 第二次动画更长
+  const winner = weightedRandom();
+
+  const timer = setInterval(()=>{
+    cards.forEach(c=>c.classList.remove("lit"));
+    const lit = Math.floor(Math.random() * prizes.length);
+    cards[lit].classList.add("lit");
+    frame++;
+    if(frame >= totalFrames) {
+      clearInterval(timer);
+      cards.forEach(c=>c.classList.remove("lit"));
+      cards[winner].classList.add("won");
+      onDrawDone(winner);
+    }
+  }, 70);
+}
+
+function onDrawDone(winner) {
+  const p = prizes[winner];
+  drawCount++;
+  drawResults[drawCount-1] = { idx: winner, name: p.name, spec: p.spec };
+
+  // 显示结果框
+  const box = document.getElementById("resultBox");
+  box.classList.add("show");
+
+  const slot = document.getElementById("slot" + drawCount);
+  const arrow = document.getElementById("slotArrow");
+  slot.style.display = "block";
+  slot.textContent = `🎉 第${drawCount}次：${icons[winner]} ${p.name}`;
+  slot.classList.add("pulse");
+  setTimeout(()=>slot.classList.remove("pulse"), 600);
+  if(drawCount === 2) {
+    if(arrow) arrow.style.display = "block";
+  }
+
+  updateCounter();
+  animating = false;
+
+  if(drawCount === 1) {
+    // 第一次抽完，开放第二次和跳过
+    document.getElementById("btnDraw").disabled = false;
+    document.getElementById("btnSkip").disabled = false;
+  } else if(drawCount >= maxDraws) {
+    // 两次抽完，解锁第二阶段
+    document.getElementById("btnDraw").disabled = true;
+    document.getElementById("btnSkip").disabled = true;
+    unlockPhase2();
+  }
+}
+
+/* ─── 跳过第2次 ─── */
+function skipSecondDraw() {
+  if(drawCount !== 1) return;
+  drawCount = maxDraws; // 标记为已完成
+  const slot2 = document.getElementById("slot2");
+  slot2.style.display = "block";
+  slot2.textContent = "（跳过第2次）";
+  slot2.style.color = "#bbb";
+  document.getElementById("btnDraw").disabled = true;
+  document.getElementById("btnSkip").disabled = true;
+  unlockPhase2();
+}
+
+/* ─── 解锁第二阶段 ─── */
+function unlockPhase2() {
+  document.getElementById("tab1").classList.remove("active");
+  document.getElementById("tab1").classList.add("done");
+  document.getElementById("tab2").classList.add("active");
+  const btn = document.getElementById("btnPhase2");
+  btn.style.display = "inline-block";
+
+  // 初始化当前记录对象（等第二阶段完成再保存）
+  currentRecord = {
+    draw1: drawResults[0] ? drawResults[0].name : "—",
+    draw1spec: drawResults[0] ? drawResults[0].spec : "",
+    draw2: drawResults[1] ? drawResults[1].name : "跳过",
+    draw2spec: drawResults[1] ? drawResults[1].spec : "",
+    num: null,
+    numDetail: "",
+    time: new Date().toLocaleString("zh-CN",{hour12:false})
+  };
+}
+
+/* ─── 启动第二阶段 ─── */
+function startPhase2() {
+  document.getElementById("phase2Section").classList.add("show");
+  document.getElementById("btnPhase2").style.display = "none";
+  document.getElementById("phase2Section").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+/* ─── 渲染数字格 ─── */
+function renderNumWheel() {
+  const wheel = document.getElementById("numWheel");
+  wheel.innerHTML = Array.from({length:10},(_,i)=>{
+    const n = i+1;
+    const pct = (numWeights[i]/numTotal*100).toFixed(1);
+    return `<div class="num-cell" id="nc-${n}">
+      ${n}
+      <span class="prob-tiny">${pct}%</span>
+    </div>`;
+  }).join("");
+}
+
+/* ─── 第二阶段抽奖 ─── */
+function doPhase2Draw() {
+  if(phase2Used || animating) return;
+  animating = true;
+  document.getElementById("btnDraw2").disabled = true;
+
+  // 加权随机选数字
+  let r = Math.random() * numTotal;
+  let winner = 1;
+  for(let i=0;i<10;i++){
+    r -= numWeights[i];
+    if(r<=0){ winner = i+1; break; }
+  }
+
+  const cells = document.querySelectorAll(".num-cell");
+  let frame = 0, totalFrames = 36;
+
+  const timer = setInterval(()=>{
+    cells.forEach(c=>c.classList.remove("lit"));
+    const lit = Math.floor(Math.random()*10);
+    cells[lit].classList.add("lit");
+    frame++;
+    if(frame >= totalFrames) {
+      clearInterval(timer);
+      cells.forEach(c=>c.classList.remove("lit"));
+      document.getElementById("nc-"+winner).classList.add("won-num");
+      onPhase2Done(winner);
+    }
+  }, 80);
+}
+
+function onPhase2Done(winner) {
+  phase2Used = true;
+  animating = false;
+  const pct = (numWeights[winner-1]/numTotal*100).toFixed(1);
+
+  const res = document.getElementById("phase2Result");
+  const det = document.getElementById("phase2Detail");
+  res.textContent = `🎲 抽到数字：${winner}`;
+  res.classList.add("show");
+  det.textContent = `概率 ${pct}%（数字越小概率越高）`;
+  det.classList.add("show");
+
+  document.getElementById("tab2").classList.remove("active");
+  document.getElementById("tab2").classList.add("done");
+
+  // 保存记录
+  if(currentRecord) {
+    currentRecord.num = winner;
+    currentRecord.numDetail = pct + "%";
+    records.push(currentRecord);
+    localStorage.setItem("foodLotteryRecords", JSON.stringify(records));
+    renderRecords();
+  }
+}
+
+/* ─── 渲染记录 ─── */
+function renderRecords() {
+  const tbody = document.getElementById("recordBody");
+  const stat  = document.getElementById("recordStat");
+  stat.textContent = `共 ${records.length} 次完整抽奖`;
+  if(!records.length){
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-tip">暂无记录</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = records.slice().reverse().map((r,i)=>{
+    const num = r.num !== null ? r.num : "—";
+    let numBadge = "";
+    if(r.num !== null) {
+      const cls = r.num <= 3 ? "badge-green" : r.num <= 6 ? "badge-blue" : r.num <= 8 ? "badge-amber" : "badge-red";
+      numBadge = `<span class="badge ${cls}">${r.num}</span>`;
+    } else {
+      numBadge = `<span style="color:#ccc">—</span>`;
+    }
+    return `<tr>
+      <td>${records.length - i}</td>
+      <td><span class="badge badge-blue">${r.draw1}</span></td>
+      <td>${r.draw2==="跳过" ? `<span style="color:#ccc">跳过</span>` : `<span class="badge badge-blue">${r.draw2}</span>`}</td>
+      <td>${numBadge}</td>
+      <td style="color:#aaa;font-size:.63rem">${r.time}</td>
+    </tr>`;
+  }).join("");
+}
+
+/* ─── 导出 CSV ─── */
+function exportCSV() {
+  if(!records.length){ alert("暂无记录可导出"); return; }
+  const bom = "\uFEFF";
+  const header = "#,第1次饲料,第2次饲料,数字抽签,时间\n";
+  const rows = records.map((r,i)=>
+    `${i+1},"${r.draw1}(${r.draw1spec})","${r.draw2}${r.draw2spec?'('+r.draw2spec+')':''}","${r.num||'—'}",${r.time}`
+  ).join("\n");
+  const blob = new Blob([bom+header+rows],{type:"text/csv;charset=utf-8"});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url;
+  a.download = `鱼饲料抽奖记录_${new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ─── 清空记录 ─── */
+function clearRecords() {
+  if(!confirm("确定清空所有抽奖记录？此操作不可恢复。")) return;
+  records = [];
+  localStorage.removeItem("foodLotteryRecords");
+  renderRecords();
+}
+
+/* ─── 初始化 ─── */
+renderGrid();
+renderProb();
+renderNumWheel();
+renderRecords();
+updateCounter();
+</script>
+</body>
+</html>
