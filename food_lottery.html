@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>🐟 鱼饲料摇摇车</title>
+<title>馃悷 楸奸ゲ鏂欐憞鎽囪溅</title>
 <style>
   :root {
     --c1: #4fc3f7;
@@ -25,7 +25,7 @@
     padding: 0 0 60px;
   }
 
-  /* ─── 背景装饰 ─── */
+  /* 鈹€鈹€鈹€ 鑳屾櫙瑁呴グ 鈹€鈹€鈹€ */
   .bg-deco { position:fixed; font-size:3.5rem; opacity:.08; pointer-events:none; z-index:0; animation:float 8s ease-in-out infinite; }
   .bg-deco.tl { top:4%; left:2%; }
   .bg-deco.tr { top:4%; right:2%; animation-delay:2s; }
@@ -33,13 +33,13 @@
   .bg-deco.br { bottom:8%; right:2%; animation-delay:6s; }
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
 
-  /* ─── 标题 ─── */
+  /* 鈹€鈹€鈹€ 鏍囬 鈹€鈹€鈹€ */
   .header { text-align:center; padding:32px 16px 8px; position:relative; z-index:1; }
   .header h1 { font-size:1.9rem; color:#0277bd; font-weight:900; letter-spacing:2px; text-shadow:0 2px 8px rgba(2,119,189,0.15); }
   .header .sub { margin-top:6px; color:#0288d1; font-size:.88rem; opacity:.85; }
   .deco-row { text-align:center; font-size:1.4rem; letter-spacing:6px; margin:6px 0 12px; }
 
-  /* ─── 阶段标签 ─── */
+  /* 鈹€鈹€鈹€ 闃舵鏍囩 鈹€鈹€鈹€ */
   .phase-tabs {
     display: flex;
     justify-content: center;
@@ -75,7 +75,7 @@
   }
   .phase-tab .num { font-size:1.1rem; }
 
-  /* ─── 卡片网格 ─── */
+  /* 鈹€鈹€鈹€ 鍗＄墖缃戞牸 鈹€鈹€鈹€ */
   .grid-section { position:relative; z-index:1; padding:0 12px; }
   .section-title {
     text-align: center;
@@ -125,7 +125,7 @@
   .prize-card .spec { font-size:.57rem; color:#888; margin-top:2px; }
   .prize-card .qty  { display:inline-block; margin-top:3px; background:rgba(2,136,209,0.1); border-radius:10px; padding:1px 7px; font-size:.58rem; color:#0288d1; }
 
-  /* ─── 第一阶段控制区 ─── */
+  /* 鈹€鈹€鈹€ 绗竴闃舵鎺у埗鍖?鈹€鈹€鈹€ */
   .ctrl-area {
     text-align: center;
     padding: 0 16px 16px;
@@ -181,7 +181,7 @@
     display: none;
   }
 
-  /* ─── 第一阶段结果 ─── */
+  /* 鈹€鈹€鈹€ 绗竴闃舵缁撴灉 鈹€鈹€鈹€ */
   .result-box {
     margin: 0 16px 16px;
     background: rgba(255,255,255,0.8);
@@ -224,7 +224,7 @@
     0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)}
   }
 
-  /* ─── 分隔线 ─── */
+  /* 鈹€鈹€鈹€ 鍒嗛殧绾?鈹€鈹€鈹€ */
   .divider {
     display: flex;
     align-items: center;
@@ -236,7 +236,7 @@
   .divider hr { flex:1; border:none; border-top:2px dashed #b2ebf2; }
   .divider span { font-size:.8rem; color:#0288d1; white-space:nowrap; font-weight:700; }
 
-  /* ─── 第二阶段 ─── */
+  /* 鈹€鈹€鈹€ 绗簩闃舵 鈹€鈹€鈹€ */
   .phase2-section {
     margin: 0 16px 16px;
     background: rgba(255,255,255,0.82);
@@ -255,7 +255,7 @@
   .phase2-title { font-size:1rem; font-weight:900; color:#f4511e; margin-bottom:4px; }
   .phase2-desc { font-size:.75rem; color:#888; margin-bottom:14px; }
 
-  /* 数字转盘 */
+  /* 鏁板瓧杞洏 */
   .number-wheel {
     display: flex;
     justify-content: center;
@@ -317,7 +317,7 @@
   }
   .phase2-result-detail.show { display: block; }
 
-  /* ─── 概率说明 ─── */
+  /* 鈹€鈹€鈹€ 姒傜巼璇存槑 鈹€鈹€鈹€ */
   .prob-section {
     margin: 0 16px 16px;
     position: relative;
@@ -352,7 +352,7 @@
   .prob-bar { height:6px; border-radius:3px; background:linear-gradient(90deg,#4fc3f7,#0288d1); transition:width .8s; }
   .prob-pct { font-size:.62rem; color:#0288d1; font-weight:700; width:32px; text-align:right; flex-shrink:0; }
 
-  /* ─── 记录 ─── */
+  /* 鈹€鈹€鈹€ 璁板綍 鈹€鈹€鈹€ */
   .record-section {
     margin: 0 16px;
     position: relative;
@@ -403,81 +403,81 @@
 </head>
 <body>
 
-<div class="bg-deco tl">🐟</div>
-<div class="bg-deco tr">🫧</div>
-<div class="bg-deco bl">🐠</div>
-<div class="bg-deco br">🌊</div>
+<div class="bg-deco tl">馃悷</div>
+<div class="bg-deco tr">馃</div>
+<div class="bg-deco bl">馃悹</div>
+<div class="bg-deco br">馃寠</div>
 
 <div class="header">
-  <h1>🐟 鱼饲料摇摇车</h1>
-  <p class="sub">摇出你的专属鱼粮~</p>
+  <h1>馃悷 楸奸ゲ鏂欐憞鎽囪溅</h1>
+  <p class="sub">鎽囧嚭浣犵殑涓撳睘楸肩伯~</p>
 </div>
-<div class="deco-row">🐟 🐠 🫧 🐡 🐟</div>
+<div class="deco-row">馃悷 馃悹 馃 馃悺 馃悷</div>
 
-<!-- 阶段标签 -->
+<!-- 闃舵鏍囩 -->
 <div class="phase-tabs">
-  <div class="phase-tab active" id="tab1"><span class="num">①</span> 第一阶段：饲料抽奖</div>
-  <div class="phase-tab" id="tab2"><span class="num">②</span> 第二阶段：数字抽签</div>
+  <div class="phase-tab active" id="tab1"><span class="num">鈶?/span> 绗竴闃舵锛氶ゲ鏂欐娊濂?/div>
+  <div class="phase-tab" id="tab2"><span class="num">鈶?/span> 绗簩闃舵锛氭暟瀛楁娊绛?/div>
 </div>
 
-<!-- 品种卡片 -->
+<!-- 鍝佺鍗＄墖 -->
 <div class="grid-section">
-  <div class="section-title">🎴 饲料品类（按数量加权抽取）</div>
+  <div class="section-title">馃幋 楗叉枡鍝佺被锛堟寜鏁伴噺鍔犳潈鎶藉彇锛?/div>
   <div class="prize-grid" id="prizeGrid"></div>
 </div>
 
-<!-- 控制区 -->
+<!-- 鎺у埗鍖?-->
 <div class="ctrl-area">
-  <div class="draw-counter"><span id="drawCounter">第一阶段：可抽 <b>1</b> 次，已抽 <b>0</b> 次</span></div>
+  <div class="draw-counter"><span id="drawCounter">绗竴闃舵锛氬彲鎶?<b>1</b> 娆★紝宸叉娊 <b>0</b> 娆?/span></div>
   <div class="btn-row">
-    <button class="btn btn-draw" id="btnDraw" onclick="doDraw()">🎯 摇一摇</button>
+    <button class="btn btn-draw" id="btnDraw" onclick="doDraw()">馃幆 鎽囦竴鎽?/button>
   </div>
 </div>
 
-<!-- 第一阶段结果 -->
+<!-- 绗竴闃舵缁撴灉 -->
 <div class="result-box" id="resultBox">
-  <div class="result-label">🎉 本轮抽奖结果</div>
+  <div class="result-label">馃帀 鏈疆鎶藉缁撴灉</div>
   <div class="result-slots" id="resultSlots">
-    <div class="result-slot" id="slot1" style="display:none">— 第1次 —</div>
+    <div class="result-slot" id="slot1" style="display:none">鈥?绗?娆?鈥?/div>
   </div>
 </div>
 
-<!-- 分隔 -->
+<!-- 鍒嗛殧 -->
 <div class="divider">
-  <hr><span>✨ 第一阶段完成后解锁第二阶段</span><hr>
+  <hr><span>鉁?绗竴闃舵瀹屾垚鍚庤В閿佺浜岄樁娈?/span><hr>
 </div>
 
-<!-- 进入第二阶段按钮 -->
+<!-- 杩涘叆绗簩闃舵鎸夐挳 -->
 <div style="text-align:center;position:relative;z-index:1;margin-bottom:16px;">
-  <button class="btn btn-phase2" id="btnPhase2" onclick="startPhase2()">🎲 进入第二阶段 →</button>
+  <button class="btn btn-phase2" id="btnPhase2" onclick="startPhase2()">馃幉 杩涘叆绗簩闃舵 鈫?/button>
 </div>
 
-<!-- 第二阶段 -->
+<!-- 绗簩闃舵 -->
 <div class="phase2-section" id="phase2Section">
-  <div class="phase2-title">🎲 第二阶段：数字抽签</div>
-  <div class="phase2-desc">1-10 随机数，数字越大概率越低 · 仅限抽取 1 次</div>
+  <div class="phase2-title">馃幉 绗簩闃舵锛氭暟瀛楁娊绛?/div>
+  <div class="phase2-desc">1-5 闅忔満鏁帮紝鏁板瓧瓒婂ぇ姒傜巼瓒婂ぇ 路 浠呴檺鎶藉彇 1 娆?/div>
   <div class="number-wheel" id="numWheel"></div>
-  <button class="btn btn-draw" id="btnDraw2" onclick="doPhase2Draw()" style="margin-bottom:10px;">🎲 抽取数字</button>
+  <button class="btn btn-draw" id="btnDraw2" onclick="doPhase2Draw()" style="margin-bottom:10px;">馃幉 鎶藉彇鏁板瓧</button>
   <div class="phase2-result" id="phase2Result"></div>
   <div class="phase2-result-detail" id="phase2Detail"></div>
 </div>
 
-<!-- 概率说明 -->
+<!-- 姒傜巼璇存槑 -->
 <div class="prob-section">
-  <div class="prob-header">📊 第一阶段概率分布</div>
+  <div class="prob-header">馃搳 绗竴闃舵姒傜巼鍒嗗竷</div>
   <div class="prob-grid" id="probGrid"></div>
 </div>
 
-<!-- 历史记录 -->
+<!-- 鍘嗗彶璁板綍 -->
 <div class="record-section">
   <div class="record-header">
     <div>
-      <h3>📋 抽奖记录</h3>
-      <div class="stat" id="recordStat">共 0 次抽奖</div>
+      <h3>馃搵 鎶藉璁板綍</h3>
+      <div class="stat" id="recordStat">鍏?0 娆℃娊濂?/div>
     </div>
     <div class="record-btns">
-      <button class="btn-sm btn-export" onclick="exportCSV()">⬇ 导出</button>
-      <button class="btn-sm btn-clear" onclick="clearRecords()">🗑 清空</button>
+      <button class="btn-sm btn-export" onclick="exportCSV()">猬?瀵煎嚭</button>
+      <button class="btn-sm btn-clear" onclick="clearRecords()">馃棏 娓呯┖</button>
     </div>
   </div>
   <div class="record-table-wrap">
@@ -485,9 +485,9 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>饲料</th>
-          <th>数字抽签</th>
-          <th>时间</th>
+          <th>楗叉枡</th>
+          <th>鏁板瓧鎶界</th>
+          <th>鏃堕棿</th>
         </tr>
       </thead>
       <tbody id="recordBody"></tbody>
@@ -496,53 +496,51 @@
 </div>
 
 <script>
-/* ─── 数据 ─── */
+/* 鈹€鈹€鈹€ 鏁版嵁 鈹€鈹€鈹€ */
 const prizes = [
-  { name:"日清EP1",         spec:"咪咪小袋", qty:5 },
-  { name:"高够力底栖鱼小块", spec:"咪咪小袋", qty:5 },
-  { name:"高够力素食鼠片",   spec:"咪咪小袋", qty:5 },
-  { name:"高够力荤食鼠片",   spec:"咪咪小袋", qty:5 },
-  { name:"高够力素食大饼",   spec:"咪咪小袋", qty:5 },
-  { name:"高够力仿红虫",     spec:"咪咪小袋", qty:5 },
-  { name:"JBL荤食",         spec:"大袋100g",  qty:1 },
-  { name:"卓必克南极磷虾贴片",spec:"大袋100g", qty:1 },
-  { name:"日索鼠片",         spec:"咪咪小袋", qty:5 },
-  { name:"莫斯特主食s号",    spec:"咪咪小袋", qty:1 },
-  { name:"莫斯特大蒜素",     spec:"咪咪小袋", qty:1 },
+  { name:"鏃ユ竻EP1",         spec:"鍜挭灏忚", qty:5 },
+  { name:"楂樺鍔涘簳鏍栭奔灏忓潡", spec:"鍜挭灏忚", qty:5 },
+  { name:"楂樺鍔涚礌椋熼紶鐗?,   spec:"鍜挭灏忚", qty:5 },
+  { name:"楂樺鍔涜崵椋熼紶鐗?,   spec:"鍜挭灏忚", qty:5 },
+  { name:"楂樺鍔涚礌椋熷ぇ楗?,   spec:"鍜挭灏忚", qty:5 },
+  { name:"楂樺鍔涗豢绾㈣櫕",     spec:"鍜挭灏忚", qty:5 },
+  { name:"JBL鑽ら",         spec:"澶ц100g",  qty:1 },
+  { name:"鍗撳繀鍏嬪崡鏋佺７铏捐创鐗?,spec:"澶ц100g", qty:1 },
+  { name:"鏃ョ储榧犵墖",         spec:"鍜挭灏忚", qty:5 },
+  { name:"鑾柉鐗逛富椋焥鍙?,    spec:"鍜挭灏忚", qty:1 },
+  { name:"鑾柉鐗瑰ぇ钂滅礌",     spec:"鍜挭灏忚", qty:1 },
 ];
 
-const icons = ["🐟","🐠","🐡","🦈","🐋","🦑","🦀","🦞","🦐","🐙","🐬"];
+const icons = ["馃悷","馃悹","馃悺","馃","馃悑","馃","馃","馃","馃","馃悪","馃惉"];
 
-/* 第二阶段：数字1-10，概率递减。权重用 (11-n)，即 n=1→10, n=2→9 ... n=10→1 */
-const numWeights = Array.from({length:10},(_,i)=>10-i); // [10,9,8,7,6,5,4,3,2,1]
+/* 绗簩闃舵锛氭暟瀛?-5锛屼粠澶у埌灏忔鐜囬€掑锛?姒傜巼鏈€楂橈級锛屼娇鐢ㄥ钩鏂规潈閲嶆媺澶у樊璺?*/
+const numWeights = Array.from({length:5},(_,i)=>(i+1)*(i+1)); // [1,4,9,16,25] 鍗?1鈫?, 2鈫?, 3鈫?, 4鈫?6, 5鈫?5
 const numTotal   = numWeights.reduce((a,b)=>a+b,0); // 55
 
-/* ─── 状态 ─── */
-let drawCount    = 0;  // 已抽次数（第一阶段）
-let maxDraws     = 1;
-let drawResults  = [null, null]; // 两次结果
+/* 鈹€鈹€鈹€ 鐘舵€?鈹€鈹€鈹€ */
+let drawCount    = 0;  // 宸叉娊娆℃暟锛堢涓€闃舵锛?let maxDraws     = 1;
+let drawResults  = [null, null]; // 涓ゆ缁撴灉
 let phase2Used   = false;
 let animating    = false;
 let records      = JSON.parse(localStorage.getItem("foodLotteryRecords") || "[]");
-let currentRecord = null; // 当前这局的记录对象
-
-/* ─── 总权重 ─── */
+let currentRecord = null; // 褰撳墠杩欏眬鐨勮褰曞璞?
+/* 鈹€鈹€鈹€ 鎬绘潈閲?鈹€鈹€鈹€ */
 const totalQty = prizes.reduce((s,p)=>s + (p.qty||0), 0);
 
-/* ─── 渲染卡片 ─── */
+/* 鈹€鈹€鈹€ 娓叉煋鍗＄墖 鈹€鈹€鈹€ */
 function renderGrid() {
   const grid = document.getElementById("prizeGrid");
   grid.innerHTML = prizes.map((p,i)=>`
     <div class="prize-card" id="card-${i}">
       <div class="icon">${icons[i]}</div>
-      <div class="name">${p.name} ×1</div>
+      <div class="name">${p.name} 脳1</div>
       <div class="spec">${p.spec}</div>
-      <div class="qty">共${p.qty||0}包</div>
+      <div class="qty">鍏?{p.qty||0}鍖?/div>
     </div>
   `).join("");
 }
 
-/* ─── 渲染概率条 ─── */
+/* 鈹€鈹€鈹€ 娓叉煋姒傜巼鏉?鈹€鈹€鈹€ */
 function renderProb() {
   const grid = document.getElementById("probGrid");
   grid.innerHTML = prizes.map((p,i)=>{
@@ -557,7 +555,7 @@ function renderProb() {
   }).join("");
 }
 
-/* ─── 加权随机 ─── */
+/* 鈹€鈹€鈹€ 鍔犳潈闅忔満 鈹€鈹€鈹€ */
 function weightedRandom() {
   let r = Math.random() * totalQty;
   for(let i=0;i<prizes.length;i++){
@@ -567,13 +565,13 @@ function weightedRandom() {
   return prizes.length-1;
 }
 
-/* ─── 更新抽次显示 ─── */
+/* 鈹€鈹€鈹€ 鏇存柊鎶芥鏄剧ず 鈹€鈹€鈹€ */
 function updateCounter() {
   document.getElementById("drawCounter").innerHTML =
-    `第一阶段：可抽 <b>${maxDraws}</b> 次，已抽 <b>${drawCount}</b> 次`;
+    `绗竴闃舵锛氬彲鎶?<b>${maxDraws}</b> 娆★紝宸叉娊 <b>${drawCount}</b> 娆;
 }
 
-/* ─── 第一阶段抽奖 ─── */
+/* 鈹€鈹€鈹€ 绗竴闃舵鎶藉 鈹€鈹€鈹€ */
 function doDraw() {
   if(animating || drawCount >= maxDraws) return;
   animating = true;
@@ -582,8 +580,7 @@ function doDraw() {
 
   const cards = document.querySelectorAll(".prize-card");
   let frame = 0;
-  const totalFrames = 30 + drawCount * 10; // 第二次动画更长
-  const winner = weightedRandom();
+  const totalFrames = 30 + drawCount * 10; // 绗簩娆″姩鐢绘洿闀?  const winner = weightedRandom();
 
   const timer = setInterval(()=>{
     cards.forEach(c=>c.classList.remove("lit"));
@@ -604,14 +601,13 @@ function onDrawDone(winner) {
   drawCount++;
   drawResults[drawCount-1] = { idx: winner, name: p.name, spec: p.spec };
 
-  // 显示结果框
-  const box = document.getElementById("resultBox");
+  // 鏄剧ず缁撴灉妗?  const box = document.getElementById("resultBox");
   box.classList.add("show");
 
   const slot = document.getElementById("slot" + drawCount);
   const arrow = document.getElementById("slotArrow");
   slot.style.display = "block";
-  slot.textContent = `🎉 第${drawCount}次：${icons[winner]} ${p.name}`;
+  slot.textContent = `馃帀 绗?{drawCount}娆★細${icons[winner]} ${p.name}`;
   slot.classList.add("pulse");
   setTimeout(()=>slot.classList.remove("pulse"), 600);
   if(drawCount === 2) {
@@ -621,25 +617,24 @@ function onDrawDone(winner) {
   updateCounter();
   animating = false;
 
-  // 抽完，解锁第二阶段
-  document.getElementById("btnDraw").disabled = true;
+  // 鎶藉畬锛岃В閿佺浜岄樁娈?  document.getElementById("btnDraw").disabled = true;
   unlockPhase2();
 }
 
-/* ─── 跳过第2次 ─── */
+/* 鈹€鈹€鈹€ 璺宠繃绗?娆?鈹€鈹€鈹€ */
 function skipSecondDraw() {
   if(drawCount !== 1) return;
-  drawCount = maxDraws; // 标记为已完成
+  drawCount = maxDraws; // 鏍囪涓哄凡瀹屾垚
   const slot2 = document.getElementById("slot2");
   slot2.style.display = "block";
-  slot2.textContent = "（跳过第2次）";
+  slot2.textContent = "锛堣烦杩囩2娆★級";
   slot2.style.color = "#bbb";
   document.getElementById("btnDraw").disabled = true;
   document.getElementById("btnSkip").disabled = true;
   unlockPhase2();
 }
 
-/* ─── 解锁第二阶段 ─── */
+/* 鈹€鈹€鈹€ 瑙ｉ攣绗簩闃舵 鈹€鈹€鈹€ */
 function unlockPhase2() {
   document.getElementById("tab1").classList.remove("active");
   document.getElementById("tab1").classList.add("done");
@@ -647,9 +642,8 @@ function unlockPhase2() {
   const btn = document.getElementById("btnPhase2");
   btn.style.display = "inline-block";
 
-  // 初始化当前记录对象（等第二阶段完成再保存）
-  currentRecord = {
-    draw1: drawResults[0] ? drawResults[0].name : "—",
+  // 鍒濆鍖栧綋鍓嶈褰曞璞★紙绛夌浜岄樁娈靛畬鎴愬啀淇濆瓨锛?  currentRecord = {
+    draw1: drawResults[0] ? drawResults[0].name : "鈥?,
     draw1spec: drawResults[0] ? drawResults[0].spec : "",
     draw2: "",
     draw2spec: "",
@@ -659,17 +653,17 @@ function unlockPhase2() {
   };
 }
 
-/* ─── 启动第二阶段 ─── */
+/* 鈹€鈹€鈹€ 鍚姩绗簩闃舵 鈹€鈹€鈹€ */
 function startPhase2() {
   document.getElementById("phase2Section").classList.add("show");
   document.getElementById("btnPhase2").style.display = "none";
   document.getElementById("phase2Section").scrollIntoView({behavior:"smooth", block:"nearest"});
 }
 
-/* ─── 渲染数字格 ─── */
+/* 鈹€鈹€鈹€ 娓叉煋鏁板瓧鏍?鈹€鈹€鈹€ */
 function renderNumWheel() {
   const wheel = document.getElementById("numWheel");
-  wheel.innerHTML = Array.from({length:10},(_,i)=>{
+  wheel.innerHTML = Array.from({length:5},(_,i)=>{
     const n = i+1;
     const pct = (numWeights[i]/numTotal*100).toFixed(1);
     return `<div class="num-cell" id="nc-${n}">
@@ -679,16 +673,15 @@ function renderNumWheel() {
   }).join("");
 }
 
-/* ─── 第二阶段抽奖 ─── */
+/* 鈹€鈹€鈹€ 绗簩闃舵鎶藉 鈹€鈹€鈹€ */
 function doPhase2Draw() {
   if(phase2Used || animating) return;
   animating = true;
   document.getElementById("btnDraw2").disabled = true;
 
-  // 加权随机选数字
-  let r = Math.random() * numTotal;
+  // 鍔犳潈闅忔満閫夋暟瀛?  let r = Math.random() * numTotal;
   let winner = 1;
-  for(let i=0;i<10;i++){
+  for(let i=0;i<5;i++){
     r -= numWeights[i];
     if(r<=0){ winner = i+1; break; }
   }
@@ -698,7 +691,7 @@ function doPhase2Draw() {
 
   const timer = setInterval(()=>{
     cells.forEach(c=>c.classList.remove("lit"));
-    const lit = Math.floor(Math.random()*10);
+    const lit = Math.floor(Math.random()*5);
     cells[lit].classList.add("lit");
     frame++;
     if(frame >= totalFrames) {
@@ -717,15 +710,15 @@ function onPhase2Done(winner) {
 
   const res = document.getElementById("phase2Result");
   const det = document.getElementById("phase2Detail");
-  res.textContent = `🎲 抽到数字：${winner}`;
+  res.textContent = `馃幉 鎶藉埌鏁板瓧锛?{winner}`;
   res.classList.add("show");
-  det.textContent = `概率 ${pct}%（数字越小概率越高）`;
+  det.textContent = `姒傜巼 ${pct}%锛堟暟瀛楄秺澶т腑濂栨鐜囪秺楂橈級`;
   det.classList.add("show");
 
   document.getElementById("tab2").classList.remove("active");
   document.getElementById("tab2").classList.add("done");
 
-  // 保存记录
+  // 淇濆瓨璁板綍
   if(currentRecord) {
     currentRecord.num = winner;
     currentRecord.numDetail = pct + "%";
@@ -735,23 +728,23 @@ function onPhase2Done(winner) {
   }
 }
 
-/* ─── 渲染记录 ─── */
+/* 鈹€鈹€鈹€ 娓叉煋璁板綍 鈹€鈹€鈹€ */
 function renderRecords() {
   const tbody = document.getElementById("recordBody");
   const stat  = document.getElementById("recordStat");
-  stat.textContent = `共 ${records.length} 次完整抽奖`;
+  stat.textContent = `鍏?${records.length} 娆″畬鏁存娊濂朻;
   if(!records.length){
-    tbody.innerHTML = `<tr><td colspan="4" class="empty-tip">暂无记录</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="empty-tip">鏆傛棤璁板綍</td></tr>`;
     return;
   }
   tbody.innerHTML = records.slice().reverse().map((r,i)=>{
-    const num = r.num !== null ? r.num : "—";
+    const num = r.num !== null ? r.num : "鈥?;
     let numBadge = "";
     if(r.num !== null) {
       const cls = r.num <= 3 ? "badge-green" : r.num <= 6 ? "badge-blue" : r.num <= 8 ? "badge-amber" : "badge-red";
       numBadge = `<span class="badge ${cls}">${r.num}</span>`;
     } else {
-      numBadge = `<span style="color:#ccc">—</span>`;
+      numBadge = `<span style="color:#ccc">鈥?/span>`;
     }
     return `<tr>
       <td>${records.length - i}</td>
@@ -762,32 +755,32 @@ function renderRecords() {
   }).join("");
 }
 
-/* ─── 导出 CSV ─── */
+/* 鈹€鈹€鈹€ 瀵煎嚭 CSV 鈹€鈹€鈹€ */
 function exportCSV() {
-  if(!records.length){ alert("暂无记录可导出"); return; }
+  if(!records.length){ alert("鏆傛棤璁板綍鍙鍑?); return; }
   const bom = "\uFEFF";
-  const header = "#,饲料,数字抽签,时间\n";
+  const header = "#,楗叉枡,鏁板瓧鎶界,鏃堕棿\n";
   const rows = records.map((r,i)=>
-    `${i+1},"${r.draw1}(${r.draw1spec})","${r.num||'—'}",${r.time}`
+    `${i+1},"${r.draw1}(${r.draw1spec})","${r.num||'鈥?}",${r.time}`
   ).join("\n");
   const blob = new Blob([bom+header+rows],{type:"text/csv;charset=utf-8"});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");
   a.href = url;
-  a.download = `鱼饲料抽奖记录_${new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")}.csv`;
+  a.download = `楸奸ゲ鏂欐娊濂栬褰昣${new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-/* ─── 清空记录 ─── */
+/* 鈹€鈹€鈹€ 娓呯┖璁板綍 鈹€鈹€鈹€ */
 function clearRecords() {
-  if(!confirm("确定清空所有抽奖记录？此操作不可恢复。")) return;
+  if(!confirm("纭畾娓呯┖鎵€鏈夋娊濂栬褰曪紵姝ゆ搷浣滀笉鍙仮澶嶃€?)) return;
   records = [];
   localStorage.removeItem("foodLotteryRecords");
   renderRecords();
 }
 
-/* ─── 初始化 ─── */
+/* 鈹€鈹€鈹€ 鍒濆鍖?鈹€鈹€鈹€ */
 renderGrid();
 renderProb();
 renderNumWheel();
