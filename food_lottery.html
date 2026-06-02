@@ -576,7 +576,6 @@ function doDraw() {
   if(animating || drawCount >= maxDraws) return;
   animating = true;
   document.getElementById("btnDraw").disabled = true;
-  document.getElementById("btnSkip").disabled = true;
 
   const cards = document.querySelectorAll(".prize-card");
   let frame = 0;
