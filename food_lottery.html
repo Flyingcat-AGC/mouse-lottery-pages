@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>鱼饲料摇摇车</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  background:#0a0e17;
+  min-height:100vh;
+  color:#e0e0e0;
+  overflow-x:hidden;
+}
+
+/* 星空背景 */
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite;animation-delay:var(--delay);opacity:0}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.8)}}
+
+/* 光晕 */
+.glow-1,.glow-2{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.glow-1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,180,216,.12),transparent);top:-100px;left:-100px}
+.glow-2{width:400px;height:400px;background:radial-gradient(circle,rgba(255,138,101,.1),transparent);bottom:-80px;right:-80px}
+
+.container{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:20px 16px 40px}
+
+/* 顶部 */
+.header{text-align:center;padding:28px 0 8px}
+.header h1{
+  font-size:2rem;font-weight:900;
+  background:linear-gradient(135deg,#64b5f6,#26c6da,#4dd0e1);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:4px;
+  margin-bottom:4px;
+}
+.header .subtitle{font-size:.8rem;color:rgba(255,255,255,.35);letter-spacing:3px;text-transform:uppercase}
+
+/* 阶段指示器 */
+.stage-indicator{display:flex;justify-content:center;gap:20px;margin:20px 0 24px}
+.stage-dot{display:flex;flex-direction:column;align-items:center;gap:6px}
+.stage-dot .circle{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:1.1rem;
+  background:rgba(255,255,255,.04);
+  border:2px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.2);
+  transition:all .5s;
+}
+.stage-dot .label{font-size:.65rem;color:rgba(255,255,255,.2);transition:all .5s;letter-spacing:1px}
+.stage-dot.active .circle{
+  background:linear-gradient(135deg,rgba(0,180,216,.2),rgba(38,198,218,.1));
+  border-color:rgba(0,180,216,.6);
+  color:#26c6da;
+  box-shadow:0 0 24px rgba(0,180,216,.25);
+}
+.stage-dot.active .label{color:rgba(255,255,255,.6)}
+.stage-dot.done .circle{
+  background:linear-gradient(135deg,rgba(38,198,218,.15),rgba(0,180,216,.1));
+  border-color:rgba(38,198,218,.4);
+  color:#26c6da;
+}
+.stage-dot.done .label{color:rgba(38,198,218,.6)}
+.stage-line{width:40px;height:1px;background:rgba(255,255,255,.08);align-self:center;margin-top:-16px}
+
+/* 卡片区域 */
+.cards-area{padding:0 4px}
+.cards-title{text-align:center;font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:2px;margin-bottom:12px}
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-bottom:20px;
+}
+@media(max-width:380px){.cards-grid{grid-template-columns:repeat(3,1fr)}}
+
+.prize-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:12px 6px 10px;
+  text-align:center;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  cursor:default;
+  position:relative;
+  overflow:hidden;
+}
+.prize-card::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,180,216,.08),rgba(38,198,218,.03));
+  opacity:0;transition:opacity .3s;
+}
+.prize-card .emoji{font-size:1.6rem;margin-bottom:4px;position:relative;z-index:1}
+.prize-card .pname{font-size:.62rem;font-weight:700;color:rgba(255,255,255,.6);line-height:1.3;position:relative;z-index:1}
+.prize-card .pspec{font-size:.55rem;color:rgba(255,255,255,.25);margin-top:2px;position:relative;z-index:1}
+
+.prize-card.lit{
+  background:rgba(0,180,216,.12);
+  border-color:rgba(0,180,216,.5);
+  box-shadow:0 0 28px rgba(0,180,216,.3),inset 0 0 20px rgba(0,180,216,.05);
+  transform:scale(1.06);
+  z-index:2;
+}
+.prize-card.lit::before{opacity:1}
+.prize-card.won{
+  background:linear-gradient(135deg,rgba(0,180,216,.18),rgba(38,198,218,.12));
+  border-color:#26c6da;
+  box-shadow:0 0 36px rgba(38,198,218,.4),0 0 60px rgba(0,180,216,.2);
+  transform:scale(1.1);
+  z-index:3;
+  animation:wonPulse 2s ease-in-out infinite;
+}
+@keyframes wonPulse{0%,100%{box-shadow:0 0 36px rgba(38,198,218,.4)}50%{box-shadow:0 0 48px rgba(38,198,218,.6),0 0 72px rgba(0,180,216,.3)}}
+
+/* 按钮 */
+.btn-area{text-align:center;padding:8px 0}
+.btn{
+  display:inline-block;
+  padding:14px 40px;
+  border:none;border-radius:50px;
+  font-size:.95rem;font-weight:800;
+  cursor:pointer;letter-spacing:2px;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(.94)}
+.btn-primary{
+  background:linear-gradient(135deg,#00b4d8,#0077b6);
+  color:#fff;
+  box-shadow:0 4px 24px rgba(0,180,216,.35);
+}
+.btn-primary:hover{box-shadow:0 6px 32px rgba(0,180,216,.5)}
+.btn-primary:disabled{
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.15);
+  box-shadow:none;cursor:default;
+}
+.btn-secondary{
+  background:rgba(255,255,255,.04);
+  color:rgba(255,255,255,.4);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:.8rem;padding:10px 24px;
+}
+.btn-accent{
+  background:linear-gradient(135deg,#ff8a65,#f4511e);
+  color:#fff;
+  box-shadow:0 4px 24px rgba(255,138,101,.35);
+}
+.btn-accent:hover{box-shadow:0 6px 32px rgba(255,138,101,.5)}
+.btn-accent:disabled{
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.15);
+  box-shadow:none;cursor:default;
+}
+
+/* 结果展示 */
+.result-area{
+  margin-top:16px;
+  text-align:center;
+  display:none;
+  animation:fadeUp .5s ease-out;
+}
+.result-area.show{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.result-card{
+  display:inline-block;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(38,198,218,.2);
+  border-radius:16px;
+  padding:18px 28px;
+  box-shadow:0 0 32px rgba(38,198,218,.15);
+}
+.result-emoji{font-size:2.5rem;margin-bottom:6px}
+.result-name{font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:1px}
+.result-spec{font-size:.7rem;color:rgba(255,255,255,.35);margin-top:4px}
+
+/* 分隔线 */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:24px 0 16px;opacity:.4;
+}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)}
+.divider span{font-size:.65rem;color:rgba(255,255,255,.25);letter-spacing:2px;white-space:nowrap}
+
+/* 第二阶段 */
+.phase2-wrap{display:none;text-align:center;animation:fadeUp .5s ease-out}
+.phase2-wrap.show{display:block}
+.phase2-title{font-size:.85rem;color:rgba(255,138,101,.8);letter-spacing:2px;margin-bottom:4px}
+.phase2-desc{font-size:.68rem;color:rgba(255,255,255,.2);margin-bottom:16px}
+
+.num-grid{display:flex;justify-content:center;gap:10px;margin-bottom:18px}
+.num-cell{
+  width:56px;height:64px;
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;font-weight:900;
+  color:rgba(255,255,255,.2);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+}
+.num-cell.lit{
+  background:rgba(255,138,101,.15);
+  border-color:rgba(255,138,101,.5);
+  color:#ff8a65;
+  box-shadow:0 0 24px rgba(255,138,101,.25);
+  transform:scale(1.12);
+}
+.num-cell.won-num{
+  background:linear-gradient(135deg,rgba(255,138,101,.25),rgba(244,81,30,.15));
+  border-color:#ff8a65;
+  color:#fff;
+  box-shadow:0 0 36px rgba(255,138,101,.45);
+  transform:scale(1.18);
+}
+
+/* 记录 */
+.record-section{margin-top:28px}
+.record-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.record-header h3{font-size:.75rem;color:rgba(255,255,255,.3);letter-spacing:2px}
+.record-header .stat{font-size:.65rem;color:rgba(255,255,255,.15)}
+.record-btns{display:flex;gap:6px}
+.btn-sm{
+  padding:5px 14px;border-radius:20px;border:none;
+  font-size:.65rem;font-weight:700;cursor:pointer;
+  transition:all .2s;letter-spacing:1px;
+}
+.btn-sm:active{transform:scale(.93)}
+.btn-export{background:rgba(0,180,216,.15);color:rgba(0,180,216,.7)}
+.btn-clear{background:rgba(255,82,82,.12);color:rgba(255,82,82,.6)}
+
+.record-table{width:100%;border-collapse:collapse;font-size:.68rem;border-radius:12px;overflow:hidden}
+.record-table th{
+  padding:10px 8px;text-align:center;
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.25);
+  font-weight:600;font-size:.62rem;letter-spacing:1px;
+}
+.record-table td{
+  padding:10px 8px;text-align:center;
+  color:rgba(255,255,255,.45);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.record-table tbody tr:last-child td{border-bottom:none}
+.record-table tbody tr:hover td{background:rgba(255,255,255,.02)}
+.tag{
+  display:inline-block;padding:2px 10px;border-radius:8px;
+  font-size:.6rem;font-weight:700;letter-spacing:.5px;
+}
+.tag-blue{background:rgba(0,180,216,.12);color:rgba(0,180,216,.7)}
+.tag-amber{background:rgba(255,138,101,.12);color:rgba(255,138,101,.7)}
+.tag-green{background:rgba(38,198,218,.12);color:rgba(38,198,218,.7)}
+.tag-red{background:rgba(255,82,82,.12);color:rgba(255,82,82,.6)}
+.empty-tip{text-align:center;color:rgba(255,255,255,.1);padding:24px;font-size:.7rem}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="glow-1"></div>
+<div class="glow-2"></div>
+
+<div class="container">
+  <div class="header">
+    <h1>鱼饲料摇摇车</h1>
+    <div class="subtitle">Aqua Feed Lottery</div>
+  </div>
+
+  <!-- 阶段指示器 -->
+  <div class="stage-indicator">
+    <div class="stage-dot active" id="dot1">
+      <div class="circle">1</div>
+      <div class="label">品类抽取</div>
+    </div>
+    <div class="stage-line"></div>
+    <div class="stage-dot" id="dot2">
+      <div class="circle">2</div>
+      <div class="label">数量抽签</div>
+    </div>
+  </div>
+
+  <!-- 卡片区 -->
+  <div class="cards-area">
+    <div class="cards-title">FEED CATALOG</div>
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+
+  <!-- 按钮区 -->
+  <div class="btn-area">
+    <button class="btn btn-primary" id="btnDraw" onclick="doDraw()">开始抽奖</button>
+  </div>
+
+  <!-- 第一轮结果 -->
+  <div class="result-area" id="resultArea">
+    <div class="result-card">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-name" id="resultName"></div>
+      <div class="result-spec" id="resultSpec"></div>
+    </div>
+  </div>
+
+  <!-- 分隔线 -->
+  <div class="divider" id="dividerLine">
+    <span>✦ ROUND 2 ✦</span>
+  </div>
+
+  <!-- 进入第二轮按钮 -->
+  <div class="btn-area" id="btnPhase2Wrap" style="display:none">
+    <button class="btn btn-accent" onclick="startPhase2()">进入第二轮</button>
+  </div>
+
+  <!-- 第二轮 -->
+  <div class="phase2-wrap" id="phase2Wrap">
+    <div class="phase2-title">数字抽签</div>
+    <div class="phase2-desc">1 ~ 4 随机抽取，数字越大获得概率越低</div>
+    <div class="num-grid" id="numGrid"></div>
+    <button class="btn btn-accent" id="btnDraw2" onclick="doPhase2Draw()">抽取数字</button>
+    <div style="margin-top:14px;font-size:1rem;font-weight:800;color:#ff8a65;display:none" id="numResult"></div>
+  </div>
+
+  <!-- 记录 -->
+  <div class="record-section">
+    <div class="record-header">
+      <h3>抽奖记录</h3>
+      <div>
+        <span class="stat" id="recordStat">0 次记录</span>
+        <button class="btn-sm btn-export" onclick="exportCSV()" style="margin-left:8px">导出</button>
+        <button class="btn-sm btn-clear" onclick="clearRecords()" style="margin-left:4px">清空</button>
+      </div>
+    </div>
+    <table class="record-table">
+      <thead><tr><th>#</th><th>品类</th><th>数量</th><th>时间</th></tr></thead>
+      <tbody id="recordBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// 数据 - 按数量加权，不显示数量
+var prizes = [
+  {name:"日清EP1",spec:"咪咪小袋",qty:5},
+  {name:"高够力底栖鱼小块",spec:"咪咪小袋",qty:5},
+  {name:"高够力素食鼠片",spec:"咪咪小袋",qty:5},
+  {name:"高够力荤食鼠片",spec:"咪咪小袋",qty:5},
+  {name:"高够力素食大饼",spec:"咪咪小袋",qty:5},
+  {name:"高够力仿红虫",spec:"咪咪小袋",qty:5},
+  {name:"JBL荤食",spec:"大袋100g",qty:1},
+  {name:"卓必克南极磷虾贴片",spec:"大袋100g",qty:1},
+  {name:"日索鼠片",spec:"咪咪小袋",qty:5},
+  {name:"莫斯特主食s号",spec:"咪咪小袋",qty:5},
+  {name:"莫斯特大蒜素",spec:"咪咪小袋",qty:5}
+];
+var icons = ["🐟","🐠","🐡","🦈","🐋","🦑","🦀","🦞","🦐","🐙","🐬"];
+
+// 第二轮：1-4，概率递减（1权重最高）
+var numWeights = [4,3,2,1];
+var numTotal = 10;
+
+var totalQty = 47; // 11*5=55 但 JBL和卓必克各1，莫斯特各5
+// 重新计算: 5+5+5+5+5+5+1+1+5+5+5 = 47
+var drawCount = 0;
+var maxDraws = 1;
+var phase2Used = false;
+var animating = false;
+var records = [];
+var currentRecord = null;
+var currentWinner = -1;
+
+try { records = JSON.parse(localStorage.getItem("foodLotteryV2Records")||"[]"); } catch(e) { records = []; }
+
+// 星空
+(function(){
+  var s=document.getElementById("stars"),h="";
+  for(var i=0;i<80;i++){
+    var x=Math.random()*100,y=Math.random()*100,sz=Math.random()*2+1;
+    var d=Math.random()*3+2,del=Math.random()*5;
+    h+='<div class="star" style="left:'+x+'%;top:'+y+'%;width:'+sz+'px;height:'+sz+'px;--d:'+d+'s;--delay:'+del+'s"></div>';
+  }
+  s.innerHTML=h;
+})();
+
+// 计算总权重
+(function(){
+  var t=0;
+  for(var i=0;i<prizes.length;i++) t+=prizes[i].qty||0;
+  totalQty=t;
+})();
+
+function renderGrid(){
+  var g=document.getElementById("cardsGrid"),h="";
+  for(var i=0;i<prizes.length;i++){
+    var p=prizes[i];
+    h+='<div class="prize-card" id="card-'+i+'">';
+    h+='<div class="emoji">'+icons[i]+'</div>';
+    h+='<div class="pname">'+p.name+'</div>';
+    h+='<div class="pspec">'+p.spec+'</div>';
+    h+='</div>';
+  }
+  g.innerHTML=h;
+}
+
+function weightedRandom(){
+  var r=Math.random()*totalQty;
+  for(var i=0;i<prizes.length;i++){r-=prizes[i].qty||0;if(r<=0)return i;}
+  return prizes.length-1;
+}
+
+function doDraw(){
+  if(animating||drawCount>=maxDraws)return;
+  animating=true;
+  var btn=document.getElementById("btnDraw");
+  if(btn)btn.disabled=true;
+
+  var cards=document.querySelectorAll(".prize-card");
+  var frame=0,totalFrames=28;
+  var winner=weightedRandom();
+  currentWinner=winner;
+
+  var timer=setInterval(function(){
+    for(var i=0;i<cards.length;i++)cards[i].classList.remove("lit");
+    var lit=Math.floor(Math.random()*prizes.length);
+    cards[lit].classList.add("lit");
+    frame++;
+    if(frame>=totalFrames){
+      clearInterval(timer);
+      for(var i=0;i<cards.length;i++)cards[i].classList.remove("lit");
+      cards[winner].classList.add("won");
+      onDrawDone(winner);
+    }
+  },70);
+}
+
+function onDrawDone(winner){
+  var p=prizes[winner];
+  drawCount++;
+  animating=false;
+
+  // 显示结果
+  var ra=document.getElementById("resultArea");
+  if(ra)ra.classList.add("show");
+  var re=document.getElementById("resultEmoji");
+  var rn=document.getElementById("resultName");
+  var rs=document.getElementById("resultSpec");
+  if(re)re.textContent=icons[winner];
+  if(rn)rn.textContent=p.name;
+  if(rs)rs.textContent=p.spec;
+
+  // 阶段指示器
+  var d1=document.getElementById("dot1");
+  var d2=document.getElementById("dot2");
+  if(d1){d1.classList.remove("active");d1.classList.add("done");}
+  if(d2)d2.classList.add("active");
+
+  // 显示进入第二轮按钮
+  var pw=document.getElementById("btnPhase2Wrap");
+  if(pw)pw.style.display="block";
+
+  // 隐藏抽奖按钮
+  var btn=document.getElementById("btnDraw");
+  if(btn)btn.style.display="none";
+
+  currentRecord={feed:p.name,feedspec:p.spec,num:null,time:new Date().toLocaleString("zh-CN",{hour12:false})};
+
+  // 滚动到结果
+  if(ra)ra.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function startPhase2(){
+  var pw=document.getElementById("phase2Wrap");
+  if(pw)pw.classList.add("show");
+  var bp=document.getElementById("btnPhase2Wrap");
+  if(bp)bp.style.display="none";
+  if(pw)pw.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function doPhase2Draw(){
+  if(phase2Used||animating)return;
+  animating=true;
+  var btn=document.getElementById("btnDraw2");
+  if(btn)btn.disabled=true;
+
+  var r=Math.random()*numTotal;
+  var winner=1;
+  for(var i=0;i<4;i++){r-=numWeights[i];if(r<=0){winner=i+1;break;}}
+
+  var cells=document.querySelectorAll(".num-cell");
+  var frame=0,totalFrames=32;
+
+  var timer=setInterval(function(){
+    for(var i=0;i<cells.length;i++)cells[i].classList.remove("lit");
+    var lit=Math.floor(Math.random()*4);
+    cells[lit].classList.add("lit");
+    frame++;
+    if(frame>=totalFrames){
+      clearInterval(timer);
+      for(var i=0;i<cells.length;i++)cells[i].classList.remove("lit");
+      var won=document.getElementById("nc-"+winner);
+      if(won)won.classList.add("won-num");
+      onPhase2Done(winner);
+    }
+  },80);
+}
+
+function onPhase2Done(winner){
+  phase2Used=true;animating=false;
+  var nr=document.getElementById("numResult");
+  if(nr){nr.style.display="block";nr.textContent="抽到数字："+winner;}
+  var d2=document.getElementById("dot2");
+  if(d2){d2.classList.remove("active");d2.classList.add("done");}
+  if(currentRecord){currentRecord.num=winner;records.push(currentRecord);}
+  try{localStorage.setItem("foodLotteryV2Records",JSON.stringify(records));}catch(e){}
+  renderRecords();
+}
+
+function renderNumWheel(){
+  var g=document.getElementById("numGrid"),h="";
+  for(var i=0;i<4;i++){
+    var n=i+1;
+    h+='<div class="num-cell" id="nc-'+n+'">'+n+'</div>';
+  }
+  g.innerHTML=h;
+}
+
+function renderRecords(){
+  var tb=document.getElementById("recordBody");
+  var st=document.getElementById("recordStat");
+  if(!tb)return;
+  st.textContent=records.length+" 次记录";
+  if(!records.length){tb.innerHTML='<tr><td colspan="4" class="empty-tip">暂无记录</td></tr>';return;}
+  var h="";
+  for(var i=records.length-1;i>=0;i--){
+    var r=records[i];
+    var numTag="";
+    if(r.num!==null&&r.num!==undefined){
+      var cls=r.num<=2?"tag-green":r.num===3?"tag-amber":"tag-red";
+      numTag='<span class="tag '+cls+'">'+r.num+'</span>';
+    }else{numTag='<span style="color:rgba(255,255,255,.1)">—</span>';}
+    h+='<tr><td>'+(records.length-i)+'</td>';
+    h+='<td><span class="tag tag-blue">'+r.feed+'</span></td>';
+    h+='<td>'+numTag+'</td>';
+    h+='<td style="color:rgba(255,255,255,.15);font-size:.6rem">'+r.time+'</td></tr>';
+  }
+  tb.innerHTML=h;
+}
+
+function exportCSV(){
+  if(!records.length){alert("暂无记录可导出");return;}
+  var bom="\uFEFF",csv="#,品类,数量,时间\n";
+  for(var i=0;i<records.length;i++){
+    var r=records[i];
+    csv+=(i+1)+',"'+r.feed+'","'+(r.num||"—")+'",'+r.time+'\n';
+  }
+  var blob=new Blob([bom+csv],{type:"text/csv;charset=utf-8"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url;a.download="鱼饲料抽奖记录_"+new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")+".csv";
+  a.click();URL.revokeObjectURL(url);
+}
+
+function clearRecords(){
+  if(!confirm("确定清空所有记录？"))return;
+  records=[];
+  try{localStorage.removeItem("foodLotteryV2Records");}catch(e){}
+  renderRecords();
+}
+
+renderGrid();
+renderNumWheel();
+renderRecords();
+</script>
+</body>
+</html>
